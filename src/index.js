@@ -12,7 +12,9 @@ function Body() {
     return () => unsubscribe();
   }, []);
 
-  let onClick = () => state.count++;
+  let onClick = () => {
+    state.count++;
+  };
 
   return (
     <div class="hello-world">

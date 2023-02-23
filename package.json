@@ -13,11 +13,15 @@
   "author": "",
   "license": "ISC",
   "volta": {
-    "node": "17.9.1"
+    "node": "18.14.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.21.0",
     "babel-plugin-seniman": "^0.0.6"
+  },
+  "engines": {
+    "node": "18.14.2"
   },
   "dependencies": {
     "lowdb": "^5.1.0",

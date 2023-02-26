@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { useEffect, useState, useWindow } from "seniman";
 import { createServer } from "seniman/server";
 import { proxy, subscribe } from "valtio";
+import { subscribeKey } from "valtio/utils";
 import { randomize, getScore, answeredBefore } from "./questions.js";
 import { _createBlock as _$createBlock, _createComponent as _$createComponent, useMemo as _useMemo$, _declareBlock as _$declareBlock, _declareClientFunction as _$declareClientFunction } from "seniman";
 const _c$1 = _$declareClientFunction({
@@ -10,7 +11,7 @@ const _c$1 = _$declareClientFunction({
 });
 const _c$2 = _$declareClientFunction({
   argNames: [],
-  body: "{\n  const name = localStorage.getItem(\"me\");\n  if (name) {\n    this.serverFunctions[0](localStorage.getItem(\"me\"));\n  }\n}"
+  body: "{\n  const name = localStorage.getItem(\"me\");\n  if (name) {\n    this.serverFunctions[0](localStorage.getItem(\"me\"));\n  }\n  if (\"visualViewport\" in window) {\n    const mainWindow = document.getElementById(\"main\");\n    const leaderWindow = document.getElementById(\"leaderboard\");\n    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;\n    window.visualViewport.addEventListener(\"resize\", function (event) {\n      if (event.target.height * event.target.scale / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO) {\n        // show\n        mainWindow.style.paddingTop = \"375px\";\n        leaderWindow.style.display = \"none\";\n      } else {\n        // hidden\n        mainWindow.style.paddingTop = \"0\";\n        leaderWindow.style.display = \"inherit\";\n      }\n    });\n  }\n}"
 });
 const _c$3 = _$declareClientFunction({
   argNames: ["e"],
@@ -20,10 +21,14 @@ const _c$4 = _$declareClientFunction({
   argNames: ["e"],
   body: "{\n  this.serverFunctions[0](e.target.value);\n}"
 });
+const _c$5 = _$declareClientFunction({
+  argNames: ["e"],
+  body: "{\n  if (e.key === \"Enter\") {\n    this.serverFunctions[0](e.target.value);\n    this.serverFunctions[1]();\n    e.target.value = \"\";\n  }\n}"
+});
 const _b$1 = _$declareBlock({
-  templateBuffer: "ABdBAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MABBAgCAcmVsYXRpdmUgYmctd2hpdGUgcHgtNiBwdC0xMCBwYi04IHNoYWRvdy14bCByaW5nLTEgcmluZy1ncmF5LTkwMC81IHNtOm14LWF1dG8gbWF4LXctc2NyZWVuLWxnIHNtOnJvdW5kZWQtbGcgc206cHgtMTAgdy1mdWxsIGZsZXgDBAUAAEECADBkaXZpZGUteSBkaXZpZGUtZ3JheS0zMDAvNTAgZmxleCBmbGV4LWNvbCB3LWZ1bGwAwQIAL2ZsZXggZmxleC1yb3cganVzdGlmeS1iZXR3ZWVuIHBiLTYgaXRlbXMtY2VudGVyAMECABJ0ZXh0LTJ4bCBmb250LWJvbGQAgAAMQWNha2F0YSDihpIggAADPCE+gAABIAYCABp0ZXh0LWJhc2UgZm9udC1ub3JtYWwgbWwtMQCAAAEgAQIAFnRleHQtMnhsIGZvbnQtYm9sZCBwLTIAgAABIIECAE5mbGV4IGZsZXgtcm93IGJnLW5ldXRyYWwtNTAgb3ZlcmZsb3cteS1oaWRkZW4gaC0yMCBpdGVtcy1jZW50ZXIgc3BhY2UteC0yIHB4LTQAgAABIIECAG9zcGFjZS15LTIgcHktOCB0ZXh0LWJhc2UgbGVhZGluZy03IHRleHQtZ3JheS02MDAgZmxleCBmbGV4LWNvbCBqdXN0aWZ5LXN0YXJ0IGl0ZW1zLXN0YXJ0IG92ZXJmbG93LXktYXV0byBmbGV4LTEHAAhtZXNzYWdlcwCAAAEgQQIAMHB0LTggdGV4dC1iYXNlIGxlYWRpbmctNyBmbGV4IGZsZXgtcm93IHNwYWNlLXgtNACBAgAgZmxleCBqdXN0aWZ5LWNlbnRlciBpdGVtcy1jZW50ZXIAgAABIIgJAAdNZXNzYWdlCgAEdGV4dAIANGJvcmRlciByb3VuZGVkLWxnIGJvcmRlci1uZXV0cmFsLTc1IHB4LTQgcHktMiB3LWZ1bGwAgAABIEsCADlwLTQgYmctd2hpdGUgZm9udC1zZW1pYm9sZCBob3ZlcjpiZy1uZXV0cmFsLTUwIHJvdW5kZWQtbGcAAAAEU2VuZA==",
+  templateBuffer: "ABdBAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MABBAgCAcmVsYXRpdmUgYmctd2hpdGUgcHgtNiBwdC0xMCBwYi04IHNoYWRvdy14bCByaW5nLTEgcmluZy1ncmF5LTkwMC81IHNtOm14LWF1dG8gbWF4LXctc2NyZWVuLWxnIHNtOnJvdW5kZWQtbGcgc206cHgtMTAgdy1mdWxsIGZsZXgDBAUABgAEbWFpbgBBAgAwZGl2aWRlLXkgZGl2aWRlLWdyYXktMzAwLzUwIGZsZXggZmxleC1jb2wgdy1mdWxsAMECAC9mbGV4IGZsZXgtcm93IGp1c3RpZnktYmV0d2VlbiBwYi02IGl0ZW1zLWNlbnRlcgDBAgASdGV4dC0yeGwgZm9udC1ib2xkAIAADEFjYWthdGEg4oaSIIAAAzwhPoAAASAHAgAadGV4dC1iYXNlIGZvbnQtbm9ybWFsIG1sLTEAgAABIAECABZ0ZXh0LTJ4bCBmb250LWJvbGQgcC0yAIAAASCBAgBOZmxleCBmbGV4LXJvdyBiZy1uZXV0cmFsLTUwIG92ZXJmbG93LXktaGlkZGVuIGgtMjAgaXRlbXMtY2VudGVyIHNwYWNlLXgtMiBweC00BgALbGVhZGVyYm9hcmQAgAABIIECAG9zcGFjZS15LTIgcHktOCB0ZXh0LWJhc2UgbGVhZGluZy03IHRleHQtZ3JheS02MDAgZmxleCBmbGV4LWNvbCBqdXN0aWZ5LXN0YXJ0IGl0ZW1zLXN0YXJ0IG92ZXJmbG93LXktYXV0byBmbGV4LTEGAAhtZXNzYWdlcwCAAAEgQQIAMHB0LTggdGV4dC1iYXNlIGxlYWRpbmctNyBmbGV4IGZsZXgtcm93IHNwYWNlLXgtNACBAgAvZmxleCBqdXN0aWZ5LWNlbnRlciBpdGVtcy1jZW50ZXIgY3Vyc29yLXBvaW50ZXIAgAABIIgJAAdNZXNzYWdlCgAEdGV4dAIANGJvcmRlciByb3VuZGVkLWxnIGJvcmRlci1uZXV0cmFsLTc1IHB4LTQgcHktMiB3LWZ1bGwAgAABIEsCADlwLTQgYmctd2hpdGUgZm9udC1zZW1pYm9sZCBob3ZlcjpiZy1uZXV0cmFsLTUwIHJvdW5kZWQtbGcAAAAEU2VuZA==",
   elScriptBuffer: "FQH/AQABAQECAQMCBAIFAgYCAwIIAgICCgILAgwCDQIOAQ8CEAIRAhICEwcDBQMFB/8J/wv/Df8Q/wMQEhQ=",
-  tokens: ["div", "class", "style", "height", "100vh", "span", "id", "input", "placeholder", "type", "button"]
+  tokens: ["div", "class", "style", "height", "100vh", "id", "span", "input", "placeholder", "type", "button"]
 });
 const _b$2 = _$declareBlock({
   templateBuffer: "AARBAgBZIGJnLW5ldXRyYWwtNTAwIHRleHQtd2hpdGUgZmxleCBmbGV4LXJvdyByb3VuZGVkLWxnIGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBweS0xIHB4LTMAgQCAAAEgAQIAEmZvbnQtc2VtaWJvbGQgbWwtMQA=",
@@ -60,7 +65,7 @@ const state = proxy({
   question: null
 });
 const CHAT_LIMIT = 40;
-const TIMER_LIMIT = 10;
+const TIMER_LIMIT = 15;
 let interval = setInterval(() => {
   state.timer++;
   if (state.timer >= TIMER_LIMIT) {
@@ -72,6 +77,7 @@ let interval = setInterval(() => {
 function Body() {
   let window = useWindow();
   let [getMe, setMe] = useState("Anonymous");
+  let [getKeyboard, setKeyboard] = useState(false);
   let [getTimer, setTimer] = useState(state.timer);
   let [getQuestion, setQuestion] = useState(state.question);
   let [getLeaderboard, setLeaderboard] = useState(state.leaderboard);
@@ -79,20 +85,25 @@ function Body() {
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
   useEffect(() => {
-    const unsubscribe = subscribe(state, () => {
-      setMessages(state.messages);
-      setTimer(state.timer);
-      setQuestion(state.question);
-      setLeaderboard(state.leaderboard);
+    const unsubscribeMessage = subscribeKey(state, "messages", messages => {
+      setMessages(messages);
       window.clientExec({
         clientFnId: _c$1
       });
+    });
+    const unsubscribe = subscribe(state, () => {
+      setTimer(state.timer);
+      setQuestion(state.question);
+      setLeaderboard(state.leaderboard);
     });
     window.clientExec({
       clientFnId: _c$2,
       serverBindFns: [setMe]
     });
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      unsubscribeMessage();
+    };
   }, []);
   const addScore = (player, score) => {
     const currentLeaderboard = state.leaderboard.find(v => v.player === player);
@@ -159,6 +170,13 @@ function Body() {
     fn: {
       clientFnId: _c$4,
       serverBindFns: [setText]
+    }
+  }, {
+    targetId: 1,
+    type: 6,
+    fn: {
+      clientFnId: _c$5,
+      serverBindFns: [setText, onClick]
     }
   }, {
     targetId: 2,

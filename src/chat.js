@@ -2,6 +2,8 @@ import * as fs from "fs";
 import { useEffect, useState, useWindow } from "seniman";
 import { createServer } from "seniman/server";
 import { proxy, subscribe } from "valtio";
+import { subscribeKey } from "valtio/utils";
+
 import { randomize, getScore, answeredBefore } from "./questions.js";
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
@@ -16,7 +18,7 @@ const state = proxy({
 });
 
 const CHAT_LIMIT = 40;
-const TIMER_LIMIT = 10;
+const TIMER_LIMIT = 15;
 
 let interval = setInterval(() => {
   state.timer++;
@@ -30,6 +32,7 @@ let interval = setInterval(() => {
 function Body() {
   let window = useWindow();
   let [getMe, setMe] = useState("Anonymous");
+  let [getKeyboard, setKeyboard] = useState(false);
   let [getTimer, setTimer] = useState(state.timer);
   let [getQuestion, setQuestion] = useState(state.question);
   let [getLeaderboard, setLeaderboard] = useState(state.leaderboard);
@@ -37,11 +40,8 @@ function Body() {
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
   useEffect(() => {
-    const unsubscribe = subscribe(state, () => {
-      setMessages(state.messages);
-      setTimer(state.timer);
-      setQuestion(state.question);
-      setLeaderboard(state.leaderboard);
+    const unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
+      setMessages(messages);
       window.clientExec(
         $c(() => {
           setTimeout(() => {
@@ -51,15 +51,44 @@ function Body() {
         })
       );
     });
+    const unsubscribe = subscribe(state, () => {
+      setTimer(state.timer);
+      setQuestion(state.question);
+      setLeaderboard(state.leaderboard);
+    });
     window.clientExec(
       $c(() => {
         const name = localStorage.getItem("me");
         if (name) {
           $s(setMe)(localStorage.getItem("me"));
         }
+
+        if ("visualViewport" in window) {
+          const mainWindow = document.getElementById("main");
+          const leaderWindow = document.getElementById("leaderboard");
+          const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
+          window.visualViewport.addEventListener("resize", function (event) {
+            if (
+              (event.target.height * event.target.scale) /
+                window.screen.height <
+              VIEWPORT_VS_CLIENT_HEIGHT_RATIO
+            ) {
+              // show
+              mainWindow.style.paddingTop = "375px";
+              leaderWindow.style.display = "none";
+            } else {
+              // hidden
+              mainWindow.style.paddingTop = "0";
+              leaderWindow.style.display = "inherit";
+            }
+          });
+        }
       })
     );
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      unsubscribeMessage();
+    };
   }, []);
 
   const addScore = (player, score) => {
@@ -111,6 +140,7 @@ function Body() {
       <div
         class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto max-w-screen-lg sm:rounded-lg sm:px-10 w-full flex"
         style={{ height: "100vh" }}
+        id="main"
       >
         <div class="divide-y divide-gray-300/50 flex flex-col w-full">
           <div class="flex flex-row justify-between pb-6 items-center">
@@ -122,7 +152,10 @@ function Body() {
             </div>
             <div class="text-2xl font-bold p-2">{TIMER_LIMIT - getTimer()}</div>
           </div>
-          <div class="flex flex-row bg-neutral-50 overflow-y-hidden h-20 items-center space-x-2 px-4">
+          <div
+            class="flex flex-row bg-neutral-50 overflow-y-hidden h-20 items-center space-x-2 px-4"
+            id="leaderboard"
+          >
             {getLeaderboard()
               .sort((a, b) => b.score - a.score)
               .map((leaderboard) => {
@@ -149,7 +182,7 @@ function Body() {
           </div>
           <div class="pt-8 text-base leading-7 flex flex-row space-x-4">
             <div
-              class="flex justify-center items-center"
+              class="flex justify-center items-center cursor-pointer"
               onClick={() => setEditMe((v) => true)}
             >
               {!getEditMe() ? (
@@ -172,6 +205,13 @@ function Body() {
               value={getText()}
               onBlur={$c((e) => {
                 $s(setText)(e.target.value);
+              })}
+              onKeyDown={$c((e) => {
+                if (e.key === "Enter") {
+                  $s(setText)(e.target.value);
+                  $s(onClick)();
+                  e.target.value = "";
+                }
               })}
               placeholder="Message"
               type="text"

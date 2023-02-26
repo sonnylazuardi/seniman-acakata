@@ -26,7 +26,7 @@ const _b$3 = _$declareBlock({
   elScriptBuffer: "AAH//wA=",
   tokens: ["style"]
 });
-const tailwindCssText = fs.readFileSync("./dist/output.css", "utf8");
+const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
   messages: [{
     player: "John",

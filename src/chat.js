@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { useEffect, useState, useWindow } from "seniman";
 import { createServer } from "seniman/server";
 import { proxy, subscribe } from "valtio";
-const tailwindCssText = fs.readFileSync("./dist/output.css", "utf8");
+const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
   messages: [
     { player: "John", message: "hello" },

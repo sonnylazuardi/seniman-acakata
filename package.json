@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "echo \"Good\"",
-    "style": "npx tailwindcss -i ./src/input.css -o ./output/output.css  --watch --minify",
+    "style": "npx tailwindcss -i ./src/input.css -o ./output/output.css --minify",
     "watch": "npx babel src --out-dir output --watch",
     "start": "node output/chat.js",
     "test": "echo \"Error: no test specified\" && exit 1"

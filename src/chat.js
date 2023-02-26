@@ -63,8 +63,16 @@ function Body() {
           $s(setMe)(localStorage.getItem("me"));
         }
 
+        const mainWindow = document.getElementById("main");
+
+        let isMobile = window.matchMedia(
+          "only screen and (max-width: 480px)"
+        ).matches;
+        if (isMobile) {
+          mainWindow.style.height = "-webkit-fill-available";
+        }
+
         if ("visualViewport" in window) {
-          const mainWindow = document.getElementById("main");
           const leaderWindow = document.getElementById("leaderboard");
           const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
           window.visualViewport.addEventListener("resize", function (event) {
@@ -74,7 +82,7 @@ function Body() {
               VIEWPORT_VS_CLIENT_HEIGHT_RATIO
             ) {
               // show
-              mainWindow.style.paddingTop = "375px";
+              mainWindow.style.paddingTop = "390px";
               leaderWindow.style.display = "none";
             } else {
               // hidden
@@ -139,7 +147,6 @@ function Body() {
     <div class="relative flex min-h-screen flex-col justify-start overflow-hidden bg-gray-50">
       <div
         class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto max-w-screen-lg sm:rounded-lg sm:px-10 w-full flex"
-        style={{ height: "100vh" }}
         id="main"
       >
         <div class="divide-y divide-gray-300/50 flex flex-col w-full">

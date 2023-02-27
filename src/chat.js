@@ -89,9 +89,7 @@ function Body() {
     window.setCookie("__acakata_user", name);
   }
 
-  let unsubscribe, unsubscribeMessage;
-
-  unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
+  const unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
     setMessages(messages);
     window.clientExec(
       $c(() => {
@@ -103,7 +101,7 @@ function Body() {
     );
   });
 
-  unsubscribe = subscribe(state, () => {
+  const unsubscribe = subscribe(state, () => {
     setTimer(state.timer);
     setQuestion(state.question);
     setLeaderboard(state.leaderboard);

@@ -76,12 +76,14 @@ function Body() {
         }
 
         const mainWindow = document.getElementById("main");
+        const action = document.getElementById("actions");
 
         let isMobile = window.matchMedia(
           "only screen and (max-width: 480px)"
         ).matches;
         if (isMobile) {
           mainWindow.style.height = "-webkit-fill-available";
+          action.style.paddingBottom = "0px";
         }
 
         if ("visualViewport" in window) {
@@ -94,14 +96,16 @@ function Body() {
               VIEWPORT_VS_CLIENT_HEIGHT_RATIO
             ) {
               // show
-              mainWindow.style.paddingTop = "390px";
+              mainWindow.style.paddingTop = "450px";
               mainWindow.style.height = "100vh";
               leaderWindow.style.display = "none";
+              action.style.paddingBottom = "0";
             } else {
               // hidden
               mainWindow.style.paddingTop = "24px";
               leaderWindow.style.display = "inherit";
               mainWindow.style.height = "100vh";
+              action.style.paddingBottom = "80px";
             }
           });
         }
@@ -214,7 +218,10 @@ function Body() {
               );
             })}
           </div>
-          <div class="pt-8 text-base leading-7 flex flex-row space-x-4">
+          <div
+            class="pt-8 text-base leading-7 flex flex-row space-x-4"
+            id="actions"
+          >
             <div
               class="flex justify-center items-center cursor-pointer"
               onClick={() => setEditMe((v) => true)}

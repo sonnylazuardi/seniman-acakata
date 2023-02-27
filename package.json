@@ -25,6 +25,7 @@
     "node": "17.9.1"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.8.0",
     "seniman": "^0.0.70",
     "valtio": "^1.10.2"
   }

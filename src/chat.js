@@ -3,8 +3,14 @@ import { useEffect, useState, useWindow, onCleanup } from "seniman";
 import { createServer } from "seniman/server";
 import { proxy, subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
-
+import { createClient } from "@supabase/supabase-js";
 import { randomize, getScore, answeredBefore } from "./questions.js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
   messages: [
@@ -17,6 +23,16 @@ const state = proxy({
   timer: 0,
   question: randomize(),
 });
+
+supabase
+  .from("leaderboard")
+  .select()
+  .then(({ data, error }) => {
+    if (error) {
+      console.log(error);
+    }
+    state.leaderboard = data;
+  });
 
 const CHAT_LIMIT = 40;
 const TIMER_LIMIT = 15;
@@ -113,24 +129,20 @@ function Body() {
       state.online = [...state.online, getMe()];
   }, [getMe()]);
 
-  const addScore = (player, score) => {
-    const currentLeaderboard = state.leaderboard.find(
-      (v) => v.player === player
-    );
-
-    if (currentLeaderboard) {
-      state.leaderboard = state.leaderboard.map((v) => {
-        if (v.player === player) {
-          return {
-            ...v,
-            score: v.score + score,
-          };
-        }
-        return v;
-      });
-    } else {
-      state.leaderboard = [...state.leaderboard, { player, score }];
-    }
+  const addScore = async (player, score) => {
+    const { data: currentData, error } = await supabase
+      .from("leaderboard")
+      .select()
+      .eq("player", player);
+    console.log(currentData[0], error);
+    const { err1 } = await supabase.from("leaderboard").upsert({
+      player,
+      score: parseInt((currentData[0].score || 0) + score),
+    });
+    console.log(err1);
+    const { data, err2 } = await supabase.from("leaderboard").select();
+    console.log(err2);
+    state.leaderboard = data;
   };
 
   let onClick = () => {
@@ -178,7 +190,7 @@ function Body() {
             id="leaderboard"
           >
             <div>{getOnline().length} online</div>
-            {getLeaderboard()
+            {(getLeaderboard() || [])
               .sort((a, b) => b.score - a.score)
               .map((leaderboard) => {
                 const isOnline = getOnline().includes(leaderboard.player);

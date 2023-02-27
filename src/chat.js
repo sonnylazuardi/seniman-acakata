@@ -13,7 +13,12 @@ const state = proxy({
   ],
   online: [],
   answers: [],
-  leaderboard: [],
+  leaderboard: [
+    {
+      player: "budi",
+      score: 200,
+    },
+  ],
   timer: 0,
   question: null,
 });
@@ -181,10 +186,14 @@ function Body() {
             {getLeaderboard()
               .sort((a, b) => b.score - a.score)
               .map((leaderboard) => {
+                const isOnline = getOnline().includes(leaderboard.player);
                 return (
-                  <div class=" bg-neutral-500 text-white flex flex-row rounded-lg items-center justify-center py-1 px-3">
+                  <div class=" bg-neutral-500 text-white flex flex-row rounded-lg items-center justify-center py-1 px-3 relative">
                     <div>{leaderboard.player}</div>
                     <div class="font-semibold ml-1">{leaderboard.score}</div>
+                    {isOnline ? (
+                      <div class="w-3 h-3 bg-green-500 absolute -top-1 -right-1 rounded-full border-2 border-neutral-50"></div>
+                    ) : null}
                   </div>
                 );
               })}

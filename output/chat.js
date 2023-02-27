@@ -31,21 +31,26 @@ const _b$1 = _$declareBlock({
   tokens: ["div", "class", "id", "span", "input", "placeholder", "type", "button"]
 });
 const _b$2 = _$declareBlock({
-  templateBuffer: "AARBAgBZIGJnLW5ldXRyYWwtNTAwIHRleHQtd2hpdGUgZmxleCBmbGV4LXJvdyByb3VuZGVkLWxnIGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBweS0xIHB4LTMAgQCAAAEgAQIAEmZvbnQtc2VtaWJvbGQgbWwtMQA=",
-  elScriptBuffer: "AwH/AgACAQIA/wL/AA==",
+  templateBuffer: "AAVBAgBiIGJnLW5ldXRyYWwtNTAwIHRleHQtd2hpdGUgZmxleCBmbGV4LXJvdyByb3VuZGVkLWxnIGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBweS0xIHB4LTMgcmVsYXRpdmUAgQCAAAEggQIAEmZvbnQtc2VtaWJvbGQgbWwtMQAAAAEg",
+  elScriptBuffer: "AwH/AgACAQMA/wL///8A",
   tokens: ["div", "class"]
 });
 const _b$3 = _$declareBlock({
+  templateBuffer: "AAEBAgBVdy0zIGgtMyBiZy1ncmVlbi01MDAgYWJzb2x1dGUgLXRvcC0xIC1yaWdodC0xIHJvdW5kZWQtZnVsbCBib3JkZXItMiBib3JkZXItbmV1dHJhbC01MAA=",
+  elScriptBuffer: "AAAA",
+  tokens: ["div", "class"]
+});
+const _b$4 = _$declareBlock({
   templateBuffer: "AANBAgAiYmctbmV1dHJhbC01MCBweS0yIHB4LTMgcm91bmRlZC1sZwCBAgANZm9udC1zZW1pYm9sZAAAAAEg",
   elScriptBuffer: "AQH/AgD///8A",
   tokens: ["div", "class"]
 });
-const _b$4 = _$declareBlock({
+const _b$5 = _$declareBlock({
   templateBuffer: "AAEBAgAEdGV4dAMANGJvcmRlciByb3VuZGVkLWxnIGJvcmRlci1uZXV0cmFsLTc1IHB4LTQgcHktMiB3LWZ1bGwA",
   elScriptBuffer: "AAAA",
   tokens: ["input", "type", "class"]
 });
-const _b$5 = _$declareBlock({
+const _b$6 = _$declareBlock({
   templateBuffer: "AAEBAA==",
   elScriptBuffer: "AAH//wA=",
   tokens: ["style"]
@@ -61,7 +66,10 @@ const state = proxy({
   }],
   online: [],
   answers: [],
-  leaderboard: [],
+  leaderboard: [{
+    player: "budi",
+    score: 200
+  }],
   timer: 0,
   question: null
 });
@@ -155,10 +163,11 @@ function Body() {
     }
   };
   return _$createBlock(_b$1, [() => getQuestion()?.randomAnswer, () => " ", () => getQuestion()?.question, () => TIMER_LIMIT - getTimer(), () => getOnline().length, () => getLeaderboard().sort((a, b) => b.score - a.score).map(leaderboard => {
-    return _$createBlock(_b$2, [() => leaderboard.player, () => leaderboard.score], null, null);
+    const isOnline = getOnline().includes(leaderboard.player);
+    return _$createBlock(_b$2, [() => leaderboard.player, () => leaderboard.score, () => isOnline ? _$createBlock(_b$3, null, null, null) : null], null, null);
   }), () => getMessages().map(message => {
-    return _$createBlock(_b$3, [() => message.player, () => message.message], null, null);
-  }), () => !getEditMe() ? getMe() : _$createBlock(_b$4, null, [{
+    return _$createBlock(_b$4, [() => message.player, () => message.message], null, null);
+  }), () => !getEditMe() ? getMe() : _$createBlock(_b$5, null, [{
     targetId: 255,
     type: 3,
     fn: {
@@ -200,7 +209,7 @@ function Body() {
   }]);
 }
 function Head() {
-  return [_$createBlock(_b$5, [tailwindCssText], null, null)];
+  return [_$createBlock(_b$6, [tailwindCssText], null, null)];
 }
 let server = createServer({
   Body,

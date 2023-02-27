@@ -133,7 +133,7 @@ function Body() {
       .eq("player", player);
     await supabase.from("leaderboard").upsert({
       player,
-      score: parseInt((currentData[0].score || 0) + score),
+      score: parseInt((currentData[0]?.score || 0) + score),
     });
     const { data } = await supabase.from("leaderboard").select();
     state.leaderboard = data;

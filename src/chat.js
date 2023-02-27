@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { useEffect, useState, useWindow, onCleanup } from "seniman";
+import { useEffect, useState, useWindow, useMemo, onCleanup } from "seniman";
 import { createServer } from "seniman/server";
 import { proxy, subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
@@ -13,7 +13,10 @@ const supabase = createClient(
 
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
-  messages: [],
+  messages: [
+    { player: "John", message: "hello" },
+    { player: "Maxwell", message: "world" },
+  ],
   online: [],
   answers: [],
   leaderboard: [],
@@ -26,7 +29,8 @@ supabase
   .select()
   .then(({ data }) => {
     state.leaderboard = data;
-  });
+  })
+  .catch((e) => console.error(e));
 
 const CHAT_LIMIT = 40;
 const TIMER_LIMIT = 15;
@@ -42,7 +46,6 @@ let interval = setInterval(() => {
 
 function Body() {
   let window = useWindow();
-  let [getMe, setMe] = useState("anonim");
   let [getTimer, setTimer] = useState(state.timer);
   let [getQuestion, setQuestion] = useState(state.question);
   let [getLeaderboard, setLeaderboard] = useState(state.leaderboard);
@@ -50,8 +53,22 @@ function Body() {
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
   let [getOnline, setOnline] = useState(state.online);
+
+  let unsubscribe, unsubscribeMessage;
+
+  let userNameCookie = window.cookie("__acakata_user");
+
+  let getMe = useMemo(() => {
+    return userNameCookie() || "anonim";
+  });
+
+  const updateUserName = (name) => {
+    window.setCookie("__acakata_user", name);
+  }
+
   useEffect(() => {
-    const unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
+
+    unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
       setMessages(messages);
       window.clientExec(
         $c(() => {
@@ -62,29 +79,23 @@ function Body() {
         })
       );
     });
-    const unsubscribe = subscribe(state, () => {
+
+    unsubscribe = subscribe(state, () => {
       setTimer(state.timer);
       setQuestion(state.question);
       setLeaderboard(state.leaderboard);
       setOnline(state.online);
     });
+
     window.clientExec(
       $c(() => {
-        const name = localStorage.getItem("me");
-        if (name) {
-          $s(setMe)(localStorage.getItem("me"));
-        }
-
         const mainWindow = document.getElementById("main");
-        const action = document.getElementById("actions");
 
         let isMobile = window.matchMedia(
           "only screen and (max-width: 480px)"
         ).matches;
         if (isMobile) {
           mainWindow.style.height = "-webkit-fill-available";
-          mainWindow.style.height = "100vh";
-          action.style.paddingBottom = "70px";
         }
 
         if ("visualViewport" in window) {
@@ -93,7 +104,7 @@ function Body() {
           window.visualViewport.addEventListener("resize", function (event) {
             if (
               (event.target.height * event.target.scale) /
-                window.screen.height <
+              window.screen.height <
               VIEWPORT_VS_CLIENT_HEIGHT_RATIO
             ) {
               // show
@@ -113,37 +124,31 @@ function Body() {
             }
           });
         }
-
-        setTimeout(() => {
-          const messages = document.getElementById("messages");
-          messages.scrollTop = messages.scrollHeight;
-        });
       })
     );
-    onCleanup(() => {
-      unsubscribe();
-      unsubscribeMessage();
-      state.online = state.online.filter((online) => online !== getMe());
-    });
-    return () => {
-      unsubscribe();
-      unsubscribeMessage();
-    };
-  }, []);
+  });
+
+  onCleanup(() => {
+    unsubscribe();
+    unsubscribeMessage();
+    state.online = state.online.filter((online) => online !== getMe());
+  });
 
   useEffect(() => {
-    if (!state.online.includes(getMe()))
+    if (!state.online.includes(getMe())) {
       state.online = [...state.online, getMe()];
-  }, [getMe()]);
+    }
+  });
 
   const addScore = async (player, score) => {
+
     const { data: currentData } = await supabase
       .from("leaderboard")
       .select()
       .eq("player", player);
-    await supabase.from("leaderboard").upsert({
+    let res = await supabase.from("leaderboard").upsert({
       player,
-      score: parseInt((currentData[0]?.score || 0) + score),
+      score: parseInt((currentData ? currentData[0]?.score : 0) + score),
     });
     const { data } = await supabase.from("leaderboard").select();
     state.leaderboard = data;
@@ -222,13 +227,10 @@ function Body() {
               );
             })}
           </div>
-          <div
-            class="pt-8 text-base leading-7 flex flex-row space-x-4"
-            id="actions"
-          >
+          <div class="pt-8 text-base leading-7 flex flex-row space-x-4">
             <div
               class="flex justify-center items-center cursor-pointer"
-              onClick={() => setEditMe((v) => true)}
+              onClick={() => setEditMe(true)}
             >
               {!getEditMe() ? (
                 getMe()
@@ -236,8 +238,7 @@ function Body() {
                 <input
                   value={getMe()}
                   onBlur={$c((e) => {
-                    $s(setMe)(e.target.value);
-                    localStorage.setItem("me", e.target.value);
+                    $s(updateUserName)(e.target.value);
                     $s(setEditMe)(false);
                   })}
                   type="text"

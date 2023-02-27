@@ -44,6 +44,30 @@ let interval = setInterval(() => {
   }
 }, 1000);
 
+function useTypingModeEnabled() {
+  let window = useWindow();
+  let [getTypingModeEnabled, setTypingModeEnabled] = useState(false);
+
+  let _handle = (value) => {
+    // TODO: false value from the client is currently sent as empty string
+    setTypingModeEnabled(!!value);
+  }
+
+  window.clientExec($c(() => {
+    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
+    window.visualViewport.addEventListener("resize", (event) => {
+
+      let typingModeShouldBeEnabled = ((event.target.height * event.target.scale) /
+        window.screen.height) <
+        VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
+
+      $s(_handle)(typingModeShouldBeEnabled);
+    });
+  }));
+
+  return getTypingModeEnabled;
+}
+
 function Body() {
   let window = useWindow();
   let [getTimer, setTimer] = useState(state.timer);
@@ -53,8 +77,7 @@ function Body() {
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
   let [getOnline, setOnline] = useState(state.online);
-
-  let unsubscribe, unsubscribeMessage;
+  let typingModeEnabled = useTypingModeEnabled();
 
   let userNameCookie = window.cookie("__acakata_user");
 
@@ -66,66 +89,37 @@ function Body() {
     window.setCookie("__acakata_user", name);
   }
 
-  useEffect(() => {
+  let unsubscribe, unsubscribeMessage;
 
-    unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
-      setMessages(messages);
+  unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
+    setMessages(messages);
+    window.clientExec(
+      $c(() => {
+        setTimeout(() => {
+          const messages = document.getElementById("messages");
+          messages.scrollTop = messages.scrollHeight;
+        });
+      })
+    );
+  });
+
+  unsubscribe = subscribe(state, () => {
+    setTimer(state.timer);
+    setQuestion(state.question);
+    setLeaderboard(state.leaderboard);
+    setOnline(state.online);
+  });
+
+  useEffect(() => {
+    if (!typingModeEnabled()) {
       window.clientExec(
         $c(() => {
           setTimeout(() => {
-            const messages = document.getElementById("messages");
-            messages.scrollTop = messages.scrollHeight;
-          });
+            window.scrollTo(0, 0);
+          }, 200);
         })
       );
-    });
-
-    unsubscribe = subscribe(state, () => {
-      setTimer(state.timer);
-      setQuestion(state.question);
-      setLeaderboard(state.leaderboard);
-      setOnline(state.online);
-    });
-
-    window.clientExec(
-      $c(() => {
-        const mainWindow = document.getElementById("main");
-
-        let isMobile = window.matchMedia(
-          "only screen and (max-width: 480px)"
-        ).matches;
-        if (isMobile) {
-          mainWindow.style.height = "-webkit-fill-available";
-        }
-
-        if ("visualViewport" in window) {
-          const leaderWindow = document.getElementById("leaderboard");
-          const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
-          window.visualViewport.addEventListener("resize", function (event) {
-            if (
-              (event.target.height * event.target.scale) /
-              window.screen.height <
-              VIEWPORT_VS_CLIENT_HEIGHT_RATIO
-            ) {
-              // show
-              mainWindow.style.paddingTop = "450px";
-              mainWindow.style.height = "100vh";
-              leaderWindow.style.display = "none";
-              action.style.paddingBottom = "0";
-            } else {
-              // hidden
-              mainWindow.style.paddingTop = "24px";
-              leaderWindow.style.display = "inherit";
-              mainWindow.style.height = "100vh";
-              action.style.paddingBottom = "80px";
-              setTimeout(() => {
-                window.scrollTo(0, 0);
-              }, 200);
-            }
-          });
-        }
-      })
-    );
+    }
   });
 
   onCleanup(() => {
@@ -183,6 +177,10 @@ function Body() {
       <div
         class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto max-w-screen-lg sm:rounded-lg sm:px-10 w-full flex"
         id="main"
+        style={{
+          paddingTop: typingModeEnabled() ? '450px' : '24px',
+          height: '100vh'
+        }}
       >
         <div class="divide-y divide-gray-300/50 flex flex-col w-full">
           <div class="flex flex-row justify-between pb-6 items-center">
@@ -197,6 +195,9 @@ function Body() {
           <div
             class="flex flex-row bg-neutral-50 overflow-y-hidden h-20 items-center space-x-2 px-4"
             id="leaderboard"
+            style={{
+              display: typingModeEnabled() ? 'none' : 'inherit'
+            }}
           >
             <div>{getOnline().length} online</div>
             {(getLeaderboard() || [])
@@ -227,7 +228,13 @@ function Body() {
               );
             })}
           </div>
-          <div class="pt-8 text-base leading-7 flex flex-row space-x-4">
+          <div
+            class="pt-8 text-base leading-7 flex flex-row space-x-4"
+            id="actions"
+            style={{
+              paddingBottom: typingModeEnabled() ? '0' : '80px'
+            }}
+          >
             <div
               class="flex justify-center items-center cursor-pointer"
               onClick={() => setEditMe(true)}

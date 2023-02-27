@@ -8,28 +8,32 @@ import { randomize, getScore, answeredBefore } from "./questions.js";
 import { _createBlock as _$createBlock, _createComponent as _$createComponent, useMemo as _useMemo$, _declareBlock as _$declareBlock, _declareClientFunction as _$declareClientFunction } from "seniman";
 const _c$1 = _$declareClientFunction({
   argNames: [],
-  body: "{\n  setTimeout(() => {\n    const messages = document.getElementById(\"messages\");\n    messages.scrollTop = messages.scrollHeight;\n  });\n}"
+  body: "{\n  const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;\n  window.visualViewport.addEventListener(\"resize\", event => {\n    let typingModeShouldBeEnabled = event.target.height * event.target.scale / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO;\n    this.serverFunctions[0](typingModeShouldBeEnabled);\n  });\n}"
 });
 const _c$2 = _$declareClientFunction({
   argNames: [],
-  body: "{\n  const mainWindow = document.getElementById(\"main\");\n  let isMobile = window.matchMedia(\"only screen and (max-width: 480px)\").matches;\n  if (isMobile) {\n    mainWindow.style.height = \"-webkit-fill-available\";\n  }\n  if (\"visualViewport\" in window) {\n    const leaderWindow = document.getElementById(\"leaderboard\");\n    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;\n    window.visualViewport.addEventListener(\"resize\", function (event) {\n      if (event.target.height * event.target.scale / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO) {\n        // show\n        mainWindow.style.paddingTop = \"450px\";\n        mainWindow.style.height = \"100vh\";\n        leaderWindow.style.display = \"none\";\n        action.style.paddingBottom = \"0\";\n      } else {\n        // hidden\n        mainWindow.style.paddingTop = \"24px\";\n        leaderWindow.style.display = \"inherit\";\n        mainWindow.style.height = \"100vh\";\n        action.style.paddingBottom = \"80px\";\n        setTimeout(() => {\n          window.scrollTo(0, 0);\n        }, 200);\n      }\n    });\n  }\n}"
+  body: "{\n  setTimeout(() => {\n    const messages = document.getElementById(\"messages\");\n    messages.scrollTop = messages.scrollHeight;\n  });\n}"
 });
 const _c$3 = _$declareClientFunction({
-  argNames: ["e"],
-  body: "{\n  this.serverFunctions[0](e.target.value);\n  this.serverFunctions[1](false);\n}"
+  argNames: [],
+  body: "{\n  setTimeout(() => {\n    window.scrollTo(0, 0);\n  }, 200);\n}"
 });
 const _c$4 = _$declareClientFunction({
   argNames: ["e"],
-  body: "{\n  this.serverFunctions[0](e.target.value);\n}"
+  body: "{\n  this.serverFunctions[0](e.target.value);\n  this.serverFunctions[1](false);\n}"
 });
 const _c$5 = _$declareClientFunction({
+  argNames: ["e"],
+  body: "{\n  this.serverFunctions[0](e.target.value);\n}"
+});
+const _c$6 = _$declareClientFunction({
   argNames: ["e"],
   body: "{\n  if (e.key === \"Enter\") {\n    this.serverFunctions[0](e.target.value);\n    this.serverFunctions[1]();\n    e.target.value = \"\";\n  }\n}"
 });
 const _b$1 = _$declareBlock({
-  templateBuffer: "ABtBAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MABBAgCAcmVsYXRpdmUgYmctd2hpdGUgcHgtNiBwdC0xMCBwYi04IHNoYWRvdy14bCByaW5nLTEgcmluZy1ncmF5LTkwMC81IHNtOm14LWF1dG8gbWF4LXctc2NyZWVuLWxnIHNtOnJvdW5kZWQtbGcgc206cHgtMTAgdy1mdWxsIGZsZXgDAARtYWluAEECADBkaXZpZGUteSBkaXZpZGUtZ3JheS0zMDAvNTAgZmxleCBmbGV4LWNvbCB3LWZ1bGwAwQIAL2ZsZXggZmxleC1yb3cganVzdGlmeS1iZXR3ZWVuIHBiLTYgaXRlbXMtY2VudGVyAMECABJ0ZXh0LTJ4bCBmb250LWJvbGQAgAAMQWNha2F0YSDihpIggAADPCE+gAABIAQCABp0ZXh0LWJhc2UgZm9udC1ub3JtYWwgbWwtMQCAAAEgAQIAFnRleHQtMnhsIGZvbnQtYm9sZCBwLTIAgAABIMECAE5mbGV4IGZsZXgtcm93IGJnLW5ldXRyYWwtNTAgb3ZlcmZsb3cteS1oaWRkZW4gaC0yMCBpdGVtcy1jZW50ZXIgc3BhY2UteC0yIHB4LTQDAAtsZWFkZXJib2FyZADBAIAAAzwhPgAAByBvbmxpbmUAAAEggAABIIECAG9zcGFjZS15LTIgcHktOCB0ZXh0LWJhc2UgbGVhZGluZy03IHRleHQtZ3JheS02MDAgZmxleCBmbGV4LWNvbCBqdXN0aWZ5LXN0YXJ0IGl0ZW1zLXN0YXJ0IG92ZXJmbG93LXktYXV0byBmbGV4LTEDAAhtZXNzYWdlcwCAAAEgQQIAMHB0LTggdGV4dC1iYXNlIGxlYWRpbmctNyBmbGV4IGZsZXgtcm93IHNwYWNlLXgtNACBAgAvZmxleCBqdXN0aWZ5LWNlbnRlciBpdGVtcy1jZW50ZXIgY3Vyc29yLXBvaW50ZXIAgAABIIUGAAdNZXNzYWdlBwAEdGV4dAIANGJvcmRlciByb3VuZGVkLWxnIGJvcmRlci1uZXV0cmFsLTc1IHB4LTQgcHktMiB3LWZ1bGwAgAABIEgCADlwLTQgYmctd2hpdGUgZm9udC1zZW1pYm9sZCBob3ZlcjpiZy1uZXV0cmFsLTUwIHJvdW5kZWQtbGcAAAAEU2VuZA==",
-  elScriptBuffer: "FwH/AQABAQECAQMCBAIFAgYCAwIIAgICCgELAQwCCwIOAg8CEAERAhICEwIUAhUIAwUDBQf/Cf8MDQv/D/8S/wMSFBY=",
-  tokens: ["div", "class", "id", "span", "input", "placeholder", "type", "button"]
+  templateBuffer: "ABtBAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MABBAgCAcmVsYXRpdmUgYmctd2hpdGUgcHgtNiBwdC0xMCBwYi04IHNoYWRvdy14bCByaW5nLTEgcmluZy1ncmF5LTkwMC81IHNtOm14LWF1dG8gbWF4LXctc2NyZWVuLWxnIHNtOnJvdW5kZWQtbGcgc206cHgtMTAgdy1mdWxsIGZsZXgDAARtYWluBAUGAABBAgAwZGl2aWRlLXkgZGl2aWRlLWdyYXktMzAwLzUwIGZsZXggZmxleC1jb2wgdy1mdWxsAMECAC9mbGV4IGZsZXgtcm93IGp1c3RpZnktYmV0d2VlbiBwYi02IGl0ZW1zLWNlbnRlcgDBAgASdGV4dC0yeGwgZm9udC1ib2xkAIAADEFjYWthdGEg4oaSIIAAAzwhPoAAASAHAgAadGV4dC1iYXNlIGZvbnQtbm9ybWFsIG1sLTEAgAABIAECABZ0ZXh0LTJ4bCBmb250LWJvbGQgcC0yAIAAASDBAgBOZmxleCBmbGV4LXJvdyBiZy1uZXV0cmFsLTUwIG92ZXJmbG93LXktaGlkZGVuIGgtMjAgaXRlbXMtY2VudGVyIHNwYWNlLXgtMiBweC00AwALbGVhZGVyYm9hcmQEAADBAIAAAzwhPgAAByBvbmxpbmUAAAEggAABIIECAG9zcGFjZS15LTIgcHktOCB0ZXh0LWJhc2UgbGVhZGluZy03IHRleHQtZ3JheS02MDAgZmxleCBmbGV4LWNvbCBqdXN0aWZ5LXN0YXJ0IGl0ZW1zLXN0YXJ0IG92ZXJmbG93LXktYXV0byBmbGV4LTEDAAhtZXNzYWdlcwCAAAEgQQIAMHB0LTggdGV4dC1iYXNlIGxlYWRpbmctNyBmbGV4IGZsZXgtcm93IHNwYWNlLXgtNAMAB2FjdGlvbnMEAACBAgAvZmxleCBqdXN0aWZ5LWNlbnRlciBpdGVtcy1jZW50ZXIgY3Vyc29yLXBvaW50ZXIAgAABIIgJAAdNZXNzYWdlCgAEdGV4dAIANGJvcmRlciByb3VuZGVkLWxnIGJvcmRlci1uZXV0cmFsLTc1IHB4LTQgcHktMiB3LWZ1bGwAgAABIEsCADlwLTQgYmctd2hpdGUgZm9udC1zZW1pYm9sZCBob3ZlcjpiZy1uZXV0cmFsLTUwIHJvdW5kZWQtbGcAAAAEU2VuZA==",
+  elScriptBuffer: "FwH/AQABAQECAQMCBAIFAgYCAwIIAgICCgELAQwCCwIOAg8CEAERAhICEwIUAhUIAwUDBQf/Cf8MDQv/D/8S/wYACxESFBY=",
+  tokens: ["div", "class", "id", "style", "height", "100vh", "span", "input", "placeholder", "type", "button"]
 });
 const _b$2 = _$declareBlock({
   templateBuffer: "AAVBAgBiIGJnLW5ldXRyYWwtNTAwIHRleHQtd2hpdGUgZmxleCBmbGV4LXJvdyByb3VuZGVkLWxnIGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBweS0xIHB4LTMgcmVsYXRpdmUAgQCAAAEggQIAEmZvbnQtc2VtaWJvbGQgbWwtMQAAAAEg",
@@ -87,6 +91,19 @@ let interval = setInterval(() => {
     state.question = randomize();
   }
 }, 1000);
+function useTypingModeEnabled() {
+  let window = useWindow();
+  let [getTypingModeEnabled, setTypingModeEnabled] = useState(false);
+  let _handle = value => {
+    // TODO: false value from the client is currently sent as empty string
+    setTypingModeEnabled(!!value);
+  };
+  window.clientExec({
+    clientFnId: _c$1,
+    serverBindFns: [_handle]
+  });
+  return getTypingModeEnabled;
+}
 function Body() {
   let window = useWindow();
   let [getTimer, setTimer] = useState(state.timer);
@@ -96,7 +113,7 @@ function Body() {
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
   let [getOnline, setOnline] = useState(state.online);
-  let unsubscribe, unsubscribeMessage;
+  let typingModeEnabled = useTypingModeEnabled();
   let userNameCookie = window.cookie("__acakata_user");
   let getMe = useMemo(() => {
     return userNameCookie() || "anonim";
@@ -104,22 +121,25 @@ function Body() {
   const updateUserName = name => {
     window.setCookie("__acakata_user", name);
   };
-  useEffect(() => {
-    unsubscribeMessage = subscribeKey(state, "messages", messages => {
-      setMessages(messages);
-      window.clientExec({
-        clientFnId: _c$1
-      });
-    });
-    unsubscribe = subscribe(state, () => {
-      setTimer(state.timer);
-      setQuestion(state.question);
-      setLeaderboard(state.leaderboard);
-      setOnline(state.online);
-    });
+  let unsubscribe, unsubscribeMessage;
+  unsubscribeMessage = subscribeKey(state, "messages", messages => {
+    setMessages(messages);
     window.clientExec({
       clientFnId: _c$2
     });
+  });
+  unsubscribe = subscribe(state, () => {
+    setTimer(state.timer);
+    setQuestion(state.question);
+    setLeaderboard(state.leaderboard);
+    setOnline(state.online);
+  });
+  useEffect(() => {
+    if (!typingModeEnabled()) {
+      window.clientExec({
+        clientFnId: _c$3
+      });
+    }
   });
   onCleanup(() => {
     unsubscribe();
@@ -173,7 +193,7 @@ function Body() {
     targetId: 255,
     type: 3,
     fn: {
-      clientFnId: _c$3,
+      clientFnId: _c$4,
       serverBindFns: [updateUserName, setEditMe]
     }
   }], [{
@@ -182,29 +202,44 @@ function Body() {
       elRef.setAttribute("value", getMe())
     }
   }])], [{
-    targetId: 0,
+    targetId: 3,
     type: 1,
     fn: () => setEditMe(true)
   }, {
-    targetId: 1,
+    targetId: 4,
     type: 3,
     fn: {
-      clientFnId: _c$4,
+      clientFnId: _c$5,
       serverBindFns: [setText]
     }
   }, {
-    targetId: 1,
+    targetId: 4,
     type: 6,
     fn: {
-      clientFnId: _c$5,
+      clientFnId: _c$6,
       serverBindFns: [setText, onClick]
     }
   }, {
-    targetId: 2,
+    targetId: 5,
     type: 1,
     fn: onClick
   }], [{
+    targetId: 0,
+    effectFn(elRef) {
+      elRef.setStyleProperty("padding-top", typingModeEnabled() ? '450px' : '24px')
+    }
+  }, {
     targetId: 1,
+    effectFn(elRef) {
+      elRef.setStyleProperty("display", typingModeEnabled() ? 'none' : 'inherit')
+    }
+  }, {
+    targetId: 2,
+    effectFn(elRef) {
+      elRef.setStyleProperty("padding-bottom", typingModeEnabled() ? '0' : '80px')
+    }
+  }, {
+    targetId: 4,
     effectFn(elRef) {
       elRef.setAttribute("value", getText())
     }

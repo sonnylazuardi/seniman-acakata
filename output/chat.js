@@ -67,13 +67,7 @@ const _b$6 = _$declareBlock({
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
-  messages: [{
-    player: "John",
-    message: "hello"
-  }, {
-    player: "Maxwell",
-    message: "world"
-  }],
+  messages: [],
   online: [],
   answers: [],
   leaderboard: [],
@@ -232,17 +226,17 @@ function Body() {
   }], [{
     targetId: 0,
     effectFn(elRef) {
-      elRef.setStyleProperty("padding-top", typingModeEnabled() ? '450px' : '24px')
+      elRef.setStyleProperty("padding-top", typingModeEnabled() ? "450px" : "24px")
     }
   }, {
     targetId: 1,
     effectFn(elRef) {
-      elRef.setStyleProperty("display", typingModeEnabled() ? 'none' : 'inherit')
+      elRef.setStyleProperty("display", typingModeEnabled() ? "none" : "inherit")
     }
   }, {
     targetId: 2,
     effectFn(elRef) {
-      elRef.setStyleProperty("padding-bottom", typingModeEnabled() ? '0' : '80px')
+      elRef.setStyleProperty("padding-bottom", typingModeEnabled() ? "0" : "80px")
     }
   }, {
     targetId: 4,

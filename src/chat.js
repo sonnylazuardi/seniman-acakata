@@ -13,10 +13,7 @@ const supabase = createClient(
 
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
-  messages: [
-    { player: "John", message: "hello" },
-    { player: "Maxwell", message: "world" },
-  ],
+  messages: [],
   online: [],
   answers: [],
   leaderboard: [],
@@ -51,19 +48,20 @@ function useTypingModeEnabled() {
   let _handle = (value) => {
     // TODO: false value from the client is currently sent as empty string
     setTypingModeEnabled(!!value);
-  }
+  };
 
-  window.clientExec($c(() => {
-    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
-    window.visualViewport.addEventListener("resize", (event) => {
+  window.clientExec(
+    $c(() => {
+      const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
+      window.visualViewport.addEventListener("resize", (event) => {
+        let typingModeShouldBeEnabled =
+          (event.target.height * event.target.scale) / window.screen.height <
+          VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
 
-      let typingModeShouldBeEnabled = ((event.target.height * event.target.scale) /
-        window.screen.height) <
-        VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
-
-      $s(_handle)(typingModeShouldBeEnabled);
-    });
-  }));
+        $s(_handle)(typingModeShouldBeEnabled);
+      });
+    })
+  );
 
   return getTypingModeEnabled;
 }
@@ -87,7 +85,7 @@ function Body() {
 
   const updateUserName = (name) => {
     window.setCookie("__acakata_user", name);
-  }
+  };
 
   const unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
     setMessages(messages);
@@ -120,12 +118,14 @@ function Body() {
     }
   });
 
-  window.clientExec($c(() => {
-    setTimeout(() => {
-      const messages = document.getElementById("messages");
-      messages.scrollTop = messages.scrollHeight;
-    }, 200);
-  }));
+  window.clientExec(
+    $c(() => {
+      setTimeout(() => {
+        const messages = document.getElementById("messages");
+        messages.scrollTop = messages.scrollHeight;
+      }, 200);
+    })
+  );
 
   onCleanup(() => {
     unsubscribe();
@@ -140,7 +140,6 @@ function Body() {
   });
 
   const addScore = async (player, score) => {
-
     const { data: currentData } = await supabase
       .from("leaderboard")
       .select()
@@ -183,8 +182,8 @@ function Body() {
         class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto max-w-screen-lg sm:rounded-lg sm:px-10 w-full flex"
         id="main"
         style={{
-          paddingTop: typingModeEnabled() ? '450px' : '24px',
-          height: '100vh'
+          paddingTop: typingModeEnabled() ? "450px" : "24px",
+          height: "100vh",
         }}
       >
         <div class="divide-y divide-gray-300/50 flex flex-col w-full">
@@ -201,7 +200,7 @@ function Body() {
             class="flex flex-row bg-neutral-50 overflow-y-hidden h-20 items-center space-x-2 px-4"
             id="leaderboard"
             style={{
-              display: typingModeEnabled() ? 'none' : 'inherit'
+              display: typingModeEnabled() ? "none" : "inherit",
             }}
           >
             <div>{getOnline().length} online</div>
@@ -237,7 +236,7 @@ function Body() {
             class="pt-8 text-base leading-7 flex flex-row space-x-4"
             id="actions"
             style={{
-              paddingBottom: typingModeEnabled() ? '0' : '80px'
+              paddingBottom: typingModeEnabled() ? "0" : "80px",
             }}
           >
             <div

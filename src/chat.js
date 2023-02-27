@@ -27,10 +27,7 @@ const state = proxy({
 supabase
   .from("leaderboard")
   .select()
-  .then(({ data, error }) => {
-    if (error) {
-      console.log(error);
-    }
+  .then(({ data }) => {
     state.leaderboard = data;
   });
 
@@ -130,18 +127,15 @@ function Body() {
   }, [getMe()]);
 
   const addScore = async (player, score) => {
-    const { data: currentData, error } = await supabase
+    const { data: currentData } = await supabase
       .from("leaderboard")
       .select()
       .eq("player", player);
-    console.log(currentData[0], error);
-    const { err1 } = await supabase.from("leaderboard").upsert({
+    await supabase.from("leaderboard").upsert({
       player,
       score: parseInt((currentData[0].score || 0) + score),
     });
-    console.log(err1);
-    const { data, err2 } = await supabase.from("leaderboard").select();
-    console.log(err2);
+    const { data } = await supabase.from("leaderboard").select();
     state.leaderboard = data;
   };
 

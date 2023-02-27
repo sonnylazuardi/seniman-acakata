@@ -73,12 +73,8 @@ const state = proxy({
   question: randomize()
 });
 supabase.from("leaderboard").select().then(({
-  data,
-  error
+  data
 }) => {
-  if (error) {
-    console.log(error);
-  }
   state.leaderboard = data;
 });
 const CHAT_LIMIT = 40;
@@ -133,22 +129,15 @@ function Body() {
   }, [getMe()]);
   const addScore = async (player, score) => {
     const {
-      data: currentData,
-      error
+      data: currentData
     } = await supabase.from("leaderboard").select().eq("player", player);
-    console.log(currentData[0], error);
-    const {
-      err1
-    } = await supabase.from("leaderboard").upsert({
+    await supabase.from("leaderboard").upsert({
       player,
       score: parseInt((currentData[0].score || 0) + score)
     });
-    console.log(err1);
     const {
-      data,
-      err2
+      data
     } = await supabase.from("leaderboard").select();
-    console.log(err2);
     state.leaderboard = data;
   };
   let onClick = () => {

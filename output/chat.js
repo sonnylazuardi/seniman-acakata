@@ -40,7 +40,7 @@ const _b$1 = _$declareBlock({
   tokens: ["div", "class", "id", "style", "height", "100vh", "span", "input", "placeholder", "type", "button"]
 });
 const _b$2 = _$declareBlock({
-  templateBuffer: "AAVBAgBiIGJnLW5ldXRyYWwtNTAwIHRleHQtd2hpdGUgZmxleCBmbGV4LXJvdyByb3VuZGVkLWxnIGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBweS0xIHB4LTMgcmVsYXRpdmUAgQCAAAEggQIAEmZvbnQtc2VtaWJvbGQgbWwtMQAAAAEg",
+  templateBuffer: "AAVBAIEAgAABIIECABJmb250LXNlbWlib2xkIG1sLTEAAAABIA==",
   elScriptBuffer: "AwH/AgACAQMA/wL///8A",
   tokens: ["div", "class"]
 });
@@ -70,14 +70,17 @@ const state = proxy({
   messages: [],
   online: [],
   answers: [],
-  leaderboard: [],
+  leaderboard: [{
+    player: "test",
+    score: 10
+  }],
   timer: 0,
   question: randomize()
 });
 supabase.from("leaderboard").select().then(({
   data
 }) => {
-  state.leaderboard = data;
+  // state.leaderboard = data;
 }).catch(e => console.error(e));
 const CHAT_LIMIT = 40;
 const TIMER_LIMIT = 15;
@@ -187,7 +190,13 @@ function Body() {
   };
   return _$createBlock(_b$1, [() => getQuestion()?.randomAnswer, () => " ", () => getQuestion()?.question, () => TIMER_LIMIT - getTimer(), () => getOnline().length, () => (getLeaderboard() || []).sort((a, b) => b.score - a.score).map(leaderboard => {
     const isOnline = getOnline().includes(leaderboard.player);
-    return _$createBlock(_b$2, [() => leaderboard.player, () => leaderboard.score, () => isOnline ? _$createBlock(_b$3, null, null, null) : null], null, null);
+    const isMe = getMe() === leaderboard.player;
+    return _$createBlock(_b$2, [() => leaderboard.player, () => leaderboard.score, () => isOnline ? _$createBlock(_b$3, null, null, null) : null], null, [{
+      targetId: 255,
+      effectFn(elRef) {
+        elRef.setClassName(`flex flex-row rounded-lg items-center justify-center py-1 px-3 relative ${isMe ? " bg-neutral-50 border border-neutral-500" : " bg-neutral-500 text-white"}`)
+      }
+    }]);
   }), () => getMessages().map(message => {
     return _$createBlock(_b$4, [() => message.player, () => message.message], null, null);
   }), () => !getEditMe() ? getMe() : _$createBlock(_b$5, null, [{

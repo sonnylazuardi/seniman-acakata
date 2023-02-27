@@ -16,7 +16,7 @@ const state = proxy({
   messages: [],
   online: [],
   answers: [],
-  leaderboard: [],
+  leaderboard: [{ player: "test", score: 10 }],
   timer: 0,
   question: randomize(),
 });
@@ -25,7 +25,7 @@ supabase
   .from("leaderboard")
   .select()
   .then(({ data }) => {
-    state.leaderboard = data;
+    // state.leaderboard = data;
   })
   .catch((e) => console.error(e));
 
@@ -211,8 +211,15 @@ function Body() {
               .sort((a, b) => b.score - a.score)
               .map((leaderboard) => {
                 const isOnline = getOnline().includes(leaderboard.player);
+                const isMe = getMe() === leaderboard.player;
                 return (
-                  <div class=" bg-neutral-500 text-white flex flex-row rounded-lg items-center justify-center py-1 px-3 relative">
+                  <div
+                    class={`flex flex-row rounded-lg items-center justify-center py-1 px-3 relative ${
+                      isMe
+                        ? " bg-neutral-50 border border-neutral-500"
+                        : " bg-neutral-500 text-white"
+                    }`}
+                  >
                     <div>{leaderboard.player}</div>
                     <div class="font-semibold ml-1">{leaderboard.score}</div>
                     {isOnline ? (

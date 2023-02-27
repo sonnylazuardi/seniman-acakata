@@ -70,17 +70,14 @@ const state = proxy({
   messages: [],
   online: [],
   answers: [],
-  leaderboard: [{
-    player: "test",
-    score: 10
-  }],
+  leaderboard: [],
   timer: 0,
   question: randomize()
 });
 supabase.from("leaderboard").select().then(({
   data
 }) => {
-  // state.leaderboard = data;
+  state.leaderboard = data;
 }).catch(e => console.error(e));
 const CHAT_LIMIT = 40;
 const TIMER_LIMIT = 15;

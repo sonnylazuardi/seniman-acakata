@@ -13,12 +13,7 @@ const state = proxy({
   ],
   online: [],
   answers: [],
-  leaderboard: [
-    {
-      player: "budi",
-      score: 200,
-    },
-  ],
+  leaderboard: [],
   timer: 0,
   question: null,
 });

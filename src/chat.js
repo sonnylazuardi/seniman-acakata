@@ -15,7 +15,7 @@ const state = proxy({
   answers: [],
   leaderboard: [],
   timer: 0,
-  question: null,
+  question: randomize(),
 });
 
 const CHAT_LIMIT = 40;

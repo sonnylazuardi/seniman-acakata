@@ -144,10 +144,13 @@ function Body() {
       .from("leaderboard")
       .select()
       .eq("player", player);
-    let res = await supabase.from("leaderboard").upsert({
+    const upsertPayload = {
       player,
-      score: parseInt((currentData ? currentData[0]?.score : 0) + score),
-    });
+      score: !currentData.length
+        ? score
+        : parseInt(currentData[0]?.score + score),
+    };
+    await supabase.from("leaderboard").upsert(upsertPayload);
     const { data } = await supabase.from("leaderboard").select();
     state.leaderboard = data;
   };

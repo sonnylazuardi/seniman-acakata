@@ -13,10 +13,7 @@ const supabase = createClient(
 
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
-  messages: [
-    { player: "John", message: "hello" },
-    { player: "Maxwell", message: "world" },
-  ],
+  messages: [],
   online: [],
   answers: [],
   leaderboard: [],
@@ -108,6 +105,11 @@ function Body() {
             }
           });
         }
+
+        setTimeout(() => {
+          const messages = document.getElementById("messages");
+          messages.scrollTop = messages.scrollHeight;
+        });
       })
     );
     onCleanup(() => {

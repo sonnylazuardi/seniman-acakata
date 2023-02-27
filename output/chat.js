@@ -12,7 +12,7 @@ const _c$1 = _$declareClientFunction({
 });
 const _c$2 = _$declareClientFunction({
   argNames: [],
-  body: "{\n  const name = localStorage.getItem(\"me\");\n  if (name) {\n    this.serverFunctions[0](localStorage.getItem(\"me\"));\n  }\n  const mainWindow = document.getElementById(\"main\");\n  let isMobile = window.matchMedia(\"only screen and (max-width: 480px)\").matches;\n  if (isMobile) {\n    mainWindow.style.height = \"-webkit-fill-available\";\n  }\n  if (\"visualViewport\" in window) {\n    const leaderWindow = document.getElementById(\"leaderboard\");\n    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;\n    window.visualViewport.addEventListener(\"resize\", function (event) {\n      if (event.target.height * event.target.scale / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO) {\n        // show\n        mainWindow.style.paddingTop = \"390px\";\n        mainWindow.style.height = \"100vh\";\n        leaderWindow.style.display = \"none\";\n      } else {\n        // hidden\n        mainWindow.style.paddingTop = \"24px\";\n        leaderWindow.style.display = \"inherit\";\n        mainWindow.style.height = \"100vh\";\n      }\n    });\n  }\n}"
+  body: "{\n  const name = localStorage.getItem(\"me\");\n  if (name) {\n    this.serverFunctions[0](localStorage.getItem(\"me\"));\n  }\n  const mainWindow = document.getElementById(\"main\");\n  let isMobile = window.matchMedia(\"only screen and (max-width: 480px)\").matches;\n  if (isMobile) {\n    mainWindow.style.height = \"-webkit-fill-available\";\n  }\n  if (\"visualViewport\" in window) {\n    const leaderWindow = document.getElementById(\"leaderboard\");\n    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;\n    window.visualViewport.addEventListener(\"resize\", function (event) {\n      if (event.target.height * event.target.scale / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO) {\n        // show\n        mainWindow.style.paddingTop = \"390px\";\n        mainWindow.style.height = \"100vh\";\n        leaderWindow.style.display = \"none\";\n      } else {\n        // hidden\n        mainWindow.style.paddingTop = \"24px\";\n        leaderWindow.style.display = \"inherit\";\n        mainWindow.style.height = \"100vh\";\n      }\n    });\n  }\n  setTimeout(() => {\n    const messages = document.getElementById(\"messages\");\n    messages.scrollTop = messages.scrollHeight;\n  });\n}"
 });
 const _c$3 = _$declareClientFunction({
   argNames: ["e"],
@@ -59,13 +59,7 @@ const _b$6 = _$declareBlock({
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
-  messages: [{
-    player: "John",
-    message: "hello"
-  }, {
-    player: "Maxwell",
-    message: "world"
-  }],
+  messages: [],
   online: [],
   answers: [],
   leaderboard: [],

@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { useEffect, useState, useWindow } from "seniman";
+import { useEffect, useState, useWindow, onCleanup } from "seniman";
 import { createServer } from "seniman/server";
 import { proxy, subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
@@ -11,6 +11,7 @@ const state = proxy({
     { player: "John", message: "hello" },
     { player: "Maxwell", message: "world" },
   ],
+  online: [],
   answers: [],
   leaderboard: [],
   timer: 0,
@@ -31,14 +32,14 @@ let interval = setInterval(() => {
 
 function Body() {
   let window = useWindow();
-  let [getMe, setMe] = useState("Anonymous");
-  let [getKeyboard, setKeyboard] = useState(false);
+  let [getMe, setMe] = useState("anonim");
   let [getTimer, setTimer] = useState(state.timer);
   let [getQuestion, setQuestion] = useState(state.question);
   let [getLeaderboard, setLeaderboard] = useState(state.leaderboard);
   let [getEditMe, setEditMe] = useState(false);
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
+  let [getOnline, setOnline] = useState(state.online);
   useEffect(() => {
     const unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
       setMessages(messages);
@@ -55,6 +56,7 @@ function Body() {
       setTimer(state.timer);
       setQuestion(state.question);
       setLeaderboard(state.leaderboard);
+      setOnline(state.online);
     });
     window.clientExec(
       $c(() => {
@@ -83,21 +85,33 @@ function Body() {
             ) {
               // show
               mainWindow.style.paddingTop = "390px";
+              mainWindow.style.height = "100vh";
               leaderWindow.style.display = "none";
             } else {
               // hidden
-              mainWindow.style.paddingTop = "0";
+              mainWindow.style.paddingTop = "24px";
               leaderWindow.style.display = "inherit";
+              mainWindow.style.height = "100vh";
             }
           });
         }
       })
     );
+    onCleanup(() => {
+      unsubscribe();
+      unsubscribeMessage();
+      state.online = state.online.filter((online) => online !== getMe());
+    });
     return () => {
       unsubscribe();
       unsubscribeMessage();
     };
   }, []);
+
+  useEffect(() => {
+    if (!state.online.includes(getMe()))
+      state.online = [...state.online, getMe()];
+  }, [getMe()]);
 
   const addScore = (player, score) => {
     const currentLeaderboard = state.leaderboard.find(
@@ -163,6 +177,7 @@ function Body() {
             class="flex flex-row bg-neutral-50 overflow-y-hidden h-20 items-center space-x-2 px-4"
             id="leaderboard"
           >
+            <div>{getOnline().length} online</div>
             {getLeaderboard()
               .sort((a, b) => b.score - a.score)
               .map((leaderboard) => {

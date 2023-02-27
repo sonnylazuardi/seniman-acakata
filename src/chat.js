@@ -120,6 +120,13 @@ function Body() {
     }
   });
 
+  window.clientExec($c(() => {
+    setTimeout(() => {
+      const messages = document.getElementById("messages");
+      messages.scrollTop = messages.scrollHeight;
+    }, 200);
+  }));
+
   onCleanup(() => {
     unsubscribe();
     unsubscribeMessage();

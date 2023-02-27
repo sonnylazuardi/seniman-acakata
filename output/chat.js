@@ -19,14 +19,18 @@ const _c$3 = _$declareClientFunction({
   body: "{\n  setTimeout(() => {\n    window.scrollTo(0, 0);\n  }, 200);\n}"
 });
 const _c$4 = _$declareClientFunction({
-  argNames: ["e"],
-  body: "{\n  this.serverFunctions[0](e.target.value);\n  this.serverFunctions[1](false);\n}"
+  argNames: [],
+  body: "{\n  setTimeout(() => {\n    const messages = document.getElementById(\"messages\");\n    messages.scrollTop = messages.scrollHeight;\n  }, 200);\n}"
 });
 const _c$5 = _$declareClientFunction({
   argNames: ["e"],
-  body: "{\n  this.serverFunctions[0](e.target.value);\n}"
+  body: "{\n  this.serverFunctions[0](e.target.value);\n  this.serverFunctions[1](false);\n}"
 });
 const _c$6 = _$declareClientFunction({
+  argNames: ["e"],
+  body: "{\n  this.serverFunctions[0](e.target.value);\n}"
+});
+const _c$7 = _$declareClientFunction({
   argNames: ["e"],
   body: "{\n  if (e.key === \"Enter\") {\n    this.serverFunctions[0](e.target.value);\n    this.serverFunctions[1]();\n    e.target.value = \"\";\n  }\n}"
 });
@@ -140,6 +144,9 @@ function Body() {
       });
     }
   });
+  window.clientExec({
+    clientFnId: _c$4
+  });
   onCleanup(() => {
     unsubscribe();
     unsubscribeMessage();
@@ -192,7 +199,7 @@ function Body() {
     targetId: 255,
     type: 3,
     fn: {
-      clientFnId: _c$4,
+      clientFnId: _c$5,
       serverBindFns: [updateUserName, setEditMe]
     }
   }], [{
@@ -208,14 +215,14 @@ function Body() {
     targetId: 4,
     type: 3,
     fn: {
-      clientFnId: _c$5,
+      clientFnId: _c$6,
       serverBindFns: [setText]
     }
   }, {
     targetId: 4,
     type: 6,
     fn: {
-      clientFnId: _c$6,
+      clientFnId: _c$7,
       serverBindFns: [setText, onClick]
     }
   }, {

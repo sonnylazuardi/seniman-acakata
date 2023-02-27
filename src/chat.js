@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { useEffect, useState, useWindow, onCleanup } from "seniman";
+import { useEffect, useState, useWindow, useMemo, onCleanup } from "seniman";
 import { createServer } from "seniman/server";
 import { proxy, subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
@@ -13,7 +13,10 @@ const supabase = createClient(
 
 const tailwindCssText = fs.readFileSync("./output/output.css", "utf8");
 const state = proxy({
-  messages: [],
+  messages: [
+    { player: "John", message: "hello" },
+    { player: "Maxwell", message: "world" },
+  ],
   online: [],
   answers: [],
   leaderboard: [],
@@ -26,7 +29,8 @@ supabase
   .select()
   .then(({ data }) => {
     state.leaderboard = data;
-  });
+  })
+  .catch((e) => console.error(e));
 
 const CHAT_LIMIT = 40;
 const TIMER_LIMIT = 15;
@@ -40,9 +44,32 @@ let interval = setInterval(() => {
   }
 }, 1000);
 
+function useTypingModeEnabled() {
+  let window = useWindow();
+  let [getTypingModeEnabled, setTypingModeEnabled] = useState(false);
+
+  let _handle = (value) => {
+    // TODO: false value from the client is currently sent as empty string
+    setTypingModeEnabled(!!value);
+  }
+
+  window.clientExec($c(() => {
+    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
+    window.visualViewport.addEventListener("resize", (event) => {
+
+      let typingModeShouldBeEnabled = ((event.target.height * event.target.scale) /
+        window.screen.height) <
+        VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
+
+      $s(_handle)(typingModeShouldBeEnabled);
+    });
+  }));
+
+  return getTypingModeEnabled;
+}
+
 function Body() {
   let window = useWindow();
-  let [getMe, setMe] = useState("anonim");
   let [getTimer, setTimer] = useState(state.timer);
   let [getQuestion, setQuestion] = useState(state.question);
   let [getLeaderboard, setLeaderboard] = useState(state.leaderboard);
@@ -50,100 +77,70 @@ function Body() {
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
   let [getOnline, setOnline] = useState(state.online);
-  useEffect(() => {
-    const unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
-      setMessages(messages);
-      window.clientExec(
-        $c(() => {
-          setTimeout(() => {
-            const messages = document.getElementById("messages");
-            messages.scrollTop = messages.scrollHeight;
-          });
-        })
-      );
-    });
-    const unsubscribe = subscribe(state, () => {
-      setTimer(state.timer);
-      setQuestion(state.question);
-      setLeaderboard(state.leaderboard);
-      setOnline(state.online);
-    });
+  let typingModeEnabled = useTypingModeEnabled();
+
+  let userNameCookie = window.cookie("__acakata_user");
+
+  let getMe = useMemo(() => {
+    return userNameCookie() || "anonim";
+  });
+
+  const updateUserName = (name) => {
+    window.setCookie("__acakata_user", name);
+  }
+
+  const unsubscribeMessage = subscribeKey(state, "messages", (messages) => {
+    setMessages(messages);
     window.clientExec(
       $c(() => {
-        const name = localStorage.getItem("me");
-        if (name) {
-          $s(setMe)(localStorage.getItem("me"));
-        }
-
-        const mainWindow = document.getElementById("main");
-        const action = document.getElementById("actions");
-
-        let isMobile = window.matchMedia(
-          "only screen and (max-width: 480px)"
-        ).matches;
-        if (isMobile) {
-          mainWindow.style.height = "-webkit-fill-available";
-          mainWindow.style.height = "100vh";
-          action.style.paddingBottom = "70px";
-        }
-
-        if ("visualViewport" in window) {
-          const leaderWindow = document.getElementById("leaderboard");
-          const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
-          window.visualViewport.addEventListener("resize", function (event) {
-            if (
-              (event.target.height * event.target.scale) /
-                window.screen.height <
-              VIEWPORT_VS_CLIENT_HEIGHT_RATIO
-            ) {
-              // show
-              mainWindow.style.paddingTop = "450px";
-              mainWindow.style.height = "100vh";
-              leaderWindow.style.display = "none";
-              action.style.paddingBottom = "0";
-            } else {
-              // hidden
-              mainWindow.style.paddingTop = "24px";
-              leaderWindow.style.display = "inherit";
-              mainWindow.style.height = "100vh";
-              action.style.paddingBottom = "80px";
-              setTimeout(() => {
-                window.scrollTo(0, 0);
-              }, 200);
-            }
-          });
-        }
-
         setTimeout(() => {
           const messages = document.getElementById("messages");
           messages.scrollTop = messages.scrollHeight;
         });
       })
     );
-    onCleanup(() => {
-      unsubscribe();
-      unsubscribeMessage();
-      state.online = state.online.filter((online) => online !== getMe());
-    });
-    return () => {
-      unsubscribe();
-      unsubscribeMessage();
-    };
-  }, []);
+  });
+
+  const unsubscribe = subscribe(state, () => {
+    setTimer(state.timer);
+    setQuestion(state.question);
+    setLeaderboard(state.leaderboard);
+    setOnline(state.online);
+  });
 
   useEffect(() => {
-    if (!state.online.includes(getMe()))
+    if (!typingModeEnabled()) {
+      window.clientExec(
+        $c(() => {
+          setTimeout(() => {
+            window.scrollTo(0, 0);
+          }, 200);
+        })
+      );
+    }
+  });
+
+  onCleanup(() => {
+    unsubscribe();
+    unsubscribeMessage();
+    state.online = state.online.filter((online) => online !== getMe());
+  });
+
+  useEffect(() => {
+    if (!state.online.includes(getMe())) {
       state.online = [...state.online, getMe()];
-  }, [getMe()]);
+    }
+  });
 
   const addScore = async (player, score) => {
+
     const { data: currentData } = await supabase
       .from("leaderboard")
       .select()
       .eq("player", player);
-    await supabase.from("leaderboard").upsert({
+    let res = await supabase.from("leaderboard").upsert({
       player,
-      score: parseInt((currentData[0]?.score || 0) + score),
+      score: parseInt((currentData ? currentData[0]?.score : 0) + score),
     });
     const { data } = await supabase.from("leaderboard").select();
     state.leaderboard = data;
@@ -178,6 +175,10 @@ function Body() {
       <div
         class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto max-w-screen-lg sm:rounded-lg sm:px-10 w-full flex"
         id="main"
+        style={{
+          paddingTop: typingModeEnabled() ? '450px' : '24px',
+          height: '100vh'
+        }}
       >
         <div class="divide-y divide-gray-300/50 flex flex-col w-full">
           <div class="flex flex-row justify-between pb-6 items-center">
@@ -192,6 +193,9 @@ function Body() {
           <div
             class="flex flex-row bg-neutral-50 overflow-y-hidden h-20 items-center space-x-2 px-4"
             id="leaderboard"
+            style={{
+              display: typingModeEnabled() ? 'none' : 'inherit'
+            }}
           >
             <div>{getOnline().length} online</div>
             {(getLeaderboard() || [])
@@ -225,10 +229,13 @@ function Body() {
           <div
             class="pt-8 text-base leading-7 flex flex-row space-x-4"
             id="actions"
+            style={{
+              paddingBottom: typingModeEnabled() ? '0' : '80px'
+            }}
           >
             <div
               class="flex justify-center items-center cursor-pointer"
-              onClick={() => setEditMe((v) => true)}
+              onClick={() => setEditMe(true)}
             >
               {!getEditMe() ? (
                 getMe()
@@ -236,8 +243,7 @@ function Body() {
                 <input
                   value={getMe()}
                   onBlur={$c((e) => {
-                    $s(setMe)(e.target.value);
-                    localStorage.setItem("me", e.target.value);
+                    $s(updateUserName)(e.target.value);
                     $s(setEditMe)(false);
                   })}
                   type="text"

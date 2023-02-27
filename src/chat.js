@@ -83,7 +83,8 @@ function Body() {
         ).matches;
         if (isMobile) {
           mainWindow.style.height = "-webkit-fill-available";
-          action.style.paddingBottom = "0px";
+          mainWindow.style.height = "100vh";
+          action.style.paddingBottom = "70px";
         }
 
         if ("visualViewport" in window) {
@@ -106,6 +107,9 @@ function Body() {
               leaderWindow.style.display = "inherit";
               mainWindow.style.height = "100vh";
               action.style.paddingBottom = "80px";
+              setTimeout(() => {
+                window.scrollTo(0, 0);
+              }, 200);
             }
           });
         }

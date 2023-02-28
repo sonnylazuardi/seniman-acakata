@@ -1,12 +1,9 @@
 function Onboarding({ userName, updateUserName, setShowOnboard }) {
   return (
-    <div
-      class="absolute top-0 left-0 right-0 bottom-0 flex flex-col justify-center items-center bg-black bg-opacity-20 z-50 p-4"
-      onClick={() => setShowOnboard(false)}
-    >
+    <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col justify-center items-center bg-black bg-opacity-20 z-50 p-4">
       <div
-        class="bg-white max-w-screen-md w-full p-4 rounded-lg relative"
-        onClick={$c((e) => e.preventDefault())}
+        class="bg-white max-w-screen-md w-full p-4 rounded-lg relative overflow-hidden overflow-y-auto"
+        style={{ height: 560 }}
       >
         <div class="absolute top-2 right-2">
           <button
@@ -27,6 +24,7 @@ function Onboarding({ userName, updateUserName, setShowOnboard }) {
           </button>
         </div>
         <div class="mb-4 text-xl font-semibold text-center">Cara Bermain</div>
+        <div style={{ height: "1px" }} class="bg-neutral-100 mb-4 w-full" />
 
         <div class="mb-2">
           Masukkan nama pemain, setelah masuk bisa ganti nama dengan klik nama
@@ -67,7 +65,8 @@ function Onboarding({ userName, updateUserName, setShowOnboard }) {
         <div class="mb-4">
           Pemain dengan skor terbanyak akan terlihat di papan peringkat.
         </div>
-        <div class="mb-2 text-xl font-semibold">Contoh</div>
+        <div class="text-center mb-2 text-xl font-semibold">Contoh</div>
+        <div style={{ height: "1px" }} class="bg-neutral-100 mb-4 w-full" />
         <ul class="list-disc pl-4 mb-2">
           <li>
             Pertanyaan: <span class="font-semibold">RABTA</span> Arah jam 9 itu
@@ -75,6 +74,38 @@ function Onboarding({ userName, updateUserName, setShowOnboard }) {
           </li>
           <li>
             Jawaban: <span class="font-semibold">BARAT</span>
+          </li>
+        </ul>
+        <div class="text-center mb-2 text-xl font-semibold">Informasi</div>
+        <div style={{ height: "1px" }} class="bg-neutral-100 mb-4 w-full" />
+        <ul class="list-disc pl-4 mb-2">
+          <li>
+            Open Source{" "}
+            <a
+              class="font-semibold underline"
+              target="_blank"
+              href="https://github.com/sonnylazuardi/seniman-example"
+            >
+              Github
+            </a>
+          </li>
+          <li>
+            <a
+              class="font-semibold underline"
+              target="_blank"
+              href="https://twitter.com/sonnylazuardi"
+            >
+              Twitter
+            </a>
+          </li>
+          <li>
+            <a
+              class="font-semibold underline"
+              target="_blank"
+              href="https://analytics.umami.is/share/AW1WjqQomCqwBCS8/Acakata"
+            >
+              Dasbor Pengunjung
+            </a>
           </li>
         </ul>
       </div>

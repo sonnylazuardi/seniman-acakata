@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "echo \"Good\"",
+    "build": "",
     "style": "npx tailwindcss -i ./src/input.css -o ./output/output.css --watch --minify",
     "watch": "npx babel src --out-dir output --watch",
     "start": "node output/chat.js",

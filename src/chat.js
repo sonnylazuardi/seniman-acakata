@@ -122,8 +122,11 @@ function Body() {
         })
       );
     }
-    if (getMe() === DEFAULT_ME) setShowOnboard(true);
   });
+
+  useEffect(() => {
+    if (getMe() === DEFAULT_ME) setShowOnboard(true);
+  }, []);
 
   window.clientExec(
     $c(() => {

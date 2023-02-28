@@ -140,8 +140,10 @@ function Body() {
         clientFnId: _c$3
       });
     }
-    if (getMe() === DEFAULT_ME) setShowOnboard(true);
   });
+  useEffect(() => {
+    if (getMe() === DEFAULT_ME) setShowOnboard(true);
+  }, []);
   window.clientExec({
     clientFnId: _c$4
   });

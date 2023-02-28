@@ -5,6 +5,7 @@ import { proxy, subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
 import { createClient } from "@supabase/supabase-js";
 import { randomize, getScore, answeredBefore } from "./questions.js";
+import Onboarding from "./onboarding.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -66,6 +67,8 @@ function useTypingModeEnabled() {
   return getTypingModeEnabled;
 }
 
+const DEFAULT_ME = "anonim";
+
 function Body() {
   let window = useWindow();
   let [getTimer, setTimer] = useState(state.timer);
@@ -75,12 +78,15 @@ function Body() {
   let [getText, setText] = useState("");
   let [getMessages, setMessages] = useState(state.messages);
   let [getOnline, setOnline] = useState(state.online);
+
   let typingModeEnabled = useTypingModeEnabled();
 
   let userNameCookie = window.cookie("__acakata_user");
 
+  let [getShowOnboard, setShowOnboard] = useState(false);
+
   let getMe = useMemo(() => {
-    return userNameCookie() || "anonim";
+    return userNameCookie() || DEFAULT_ME;
   });
 
   const updateUserName = (name) => {
@@ -116,6 +122,7 @@ function Body() {
         })
       );
     }
+    if (getMe() === DEFAULT_ME) setShowOnboard(true);
   });
 
   window.clientExec(
@@ -181,6 +188,14 @@ function Body() {
 
   return (
     <div class="relative flex min-h-screen flex-col justify-start overflow-hidden bg-gray-50">
+      {getShowOnboard() ? (
+        <Onboarding
+          userName={getMe()}
+          updateUserName={updateUserName}
+          setShowOnboard={setShowOnboard}
+        />
+      ) : null}
+
       <div
         class="relative bg-white px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto max-w-screen-lg sm:rounded-lg sm:px-10 w-full flex"
         id="main"

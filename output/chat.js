@@ -5,6 +5,7 @@ import { proxy, subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
 import { createClient } from "@supabase/supabase-js";
 import { randomize, getScore, answeredBefore } from "./questions.js";
+import Onboarding from "./onboarding.js";
 import { _createBlock as _$createBlock, _createComponent as _$createComponent, useMemo as _useMemo$, _declareBlock as _$declareBlock, _declareClientFunction as _$declareClientFunction } from "seniman";
 const _c$1 = _$declareClientFunction({
   argNames: [],
@@ -35,8 +36,8 @@ const _c$7 = _$declareClientFunction({
   body: "{\n  if (e.key === \"Enter\") {\n    this.serverFunctions[0](e.target.value);\n    this.serverFunctions[1]();\n    e.target.value = \"\";\n  }\n}"
 });
 const _b$1 = _$declareBlock({
-  templateBuffer: "ABtBAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MABBAgCAcmVsYXRpdmUgYmctd2hpdGUgcHgtNiBwdC0xMCBwYi04IHNoYWRvdy14bCByaW5nLTEgcmluZy1ncmF5LTkwMC81IHNtOm14LWF1dG8gbWF4LXctc2NyZWVuLWxnIHNtOnJvdW5kZWQtbGcgc206cHgtMTAgdy1mdWxsIGZsZXgDAARtYWluBAUGAABBAgAwZGl2aWRlLXkgZGl2aWRlLWdyYXktMzAwLzUwIGZsZXggZmxleC1jb2wgdy1mdWxsAMECAC9mbGV4IGZsZXgtcm93IGp1c3RpZnktYmV0d2VlbiBwYi02IGl0ZW1zLWNlbnRlcgDBAgASdGV4dC0yeGwgZm9udC1ib2xkAIAADEFjYWthdGEg4oaSIIAAAzwhPoAAASAHAgAadGV4dC1iYXNlIGZvbnQtbm9ybWFsIG1sLTEAgAABIAECABZ0ZXh0LTJ4bCBmb250LWJvbGQgcC0yAIAAASDBAgBOZmxleCBmbGV4LXJvdyBiZy1uZXV0cmFsLTUwIG92ZXJmbG93LXktaGlkZGVuIGgtMjAgaXRlbXMtY2VudGVyIHNwYWNlLXgtMiBweC00AwALbGVhZGVyYm9hcmQEAADBAIAAAzwhPgAAByBvbmxpbmUAAAEggAABIIECAG9zcGFjZS15LTIgcHktOCB0ZXh0LWJhc2UgbGVhZGluZy03IHRleHQtZ3JheS02MDAgZmxleCBmbGV4LWNvbCBqdXN0aWZ5LXN0YXJ0IGl0ZW1zLXN0YXJ0IG92ZXJmbG93LXktYXV0byBmbGV4LTEDAAhtZXNzYWdlcwCAAAEgQQIAMHB0LTggdGV4dC1iYXNlIGxlYWRpbmctNyBmbGV4IGZsZXgtcm93IHNwYWNlLXgtNAMAB2FjdGlvbnMEAACBAgAvZmxleCBqdXN0aWZ5LWNlbnRlciBpdGVtcy1jZW50ZXIgY3Vyc29yLXBvaW50ZXIAgAABIIgJAAdNZXNzYWdlCgAEdGV4dAIANGJvcmRlciByb3VuZGVkLWxnIGJvcmRlci1uZXV0cmFsLTc1IHB4LTQgcHktMiB3LWZ1bGwAgAABIEsCADlwLTQgYmctd2hpdGUgZm9udC1zZW1pYm9sZCBob3ZlcjpiZy1uZXV0cmFsLTUwIHJvdW5kZWQtbGcAAAAEU2VuZA==",
-  elScriptBuffer: "FwH/AQABAQECAQMCBAIFAgYCAwIIAgICCgELAQwCCwIOAg8CEAERAhICEwIUAhUIAwUDBQf/Cf8MDQv/D/8S/wYACxESFBY=",
+  templateBuffer: "AB1BAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MACAAAM8IT6AAAEgQQIAgHJlbGF0aXZlIGJnLXdoaXRlIHB4LTYgcHQtMTAgcGItOCBzaGFkb3cteGwgcmluZy0xIHJpbmctZ3JheS05MDAvNSBzbTpteC1hdXRvIG1heC13LXNjcmVlbi1sZyBzbTpyb3VuZGVkLWxnIHNtOnB4LTEwIHctZnVsbCBmbGV4AwAEbWFpbgQFBgAAQQIAMGRpdmlkZS15IGRpdmlkZS1ncmF5LTMwMC81MCBmbGV4IGZsZXgtY29sIHctZnVsbADBAgAvZmxleCBmbGV4LXJvdyBqdXN0aWZ5LWJldHdlZW4gcGItNiBpdGVtcy1jZW50ZXIAwQIAEnRleHQtMnhsIGZvbnQtYm9sZACAAAxBY2FrYXRhIOKGkiCAAAM8IT6AAAEgBwIAGnRleHQtYmFzZSBmb250LW5vcm1hbCBtbC0xAIAAASABAgAWdGV4dC0yeGwgZm9udC1ib2xkIHAtMgCAAAEgwQIATmZsZXggZmxleC1yb3cgYmctbmV1dHJhbC01MCBvdmVyZmxvdy15LWhpZGRlbiBoLTIwIGl0ZW1zLWNlbnRlciBzcGFjZS14LTIgcHgtNAMAC2xlYWRlcmJvYXJkBAAAwQCAAAM8IT4AAAcgb25saW5lAAABIIAAASCBAgBvc3BhY2UteS0yIHB5LTggdGV4dC1iYXNlIGxlYWRpbmctNyB0ZXh0LWdyYXktNjAwIGZsZXggZmxleC1jb2wganVzdGlmeS1zdGFydCBpdGVtcy1zdGFydCBvdmVyZmxvdy15LWF1dG8gZmxleC0xAwAIbWVzc2FnZXMAgAABIEECADBwdC04IHRleHQtYmFzZSBsZWFkaW5nLTcgZmxleCBmbGV4LXJvdyBzcGFjZS14LTQDAAdhY3Rpb25zBAAAgQIAL2ZsZXgganVzdGlmeS1jZW50ZXIgaXRlbXMtY2VudGVyIGN1cnNvci1wb2ludGVyAIAAASCICQAHTWVzc2FnZQoABHRleHQCADRib3JkZXIgcm91bmRlZC1sZyBib3JkZXItbmV1dHJhbC03NSBweC00IHB5LTIgdy1mdWxsAIAAASBLAgA5cC00IGJnLXdoaXRlIGZvbnQtc2VtaWJvbGQgaG92ZXI6YmctbmV1dHJhbC01MCByb3VuZGVkLWxnAAAABFNlbmQ=",
+  elScriptBuffer: "GQH/AgACAQECAQMBBAEFAgYCBwIIAgUCCgIEAgwBDQEOAg0CEAIRAhIBEwIUAhUCFgIXCf8ABQcFBwn/C/8ODw3/Ef8U/wYCDRMUFhg=",
   tokens: ["div", "class", "id", "style", "height", "100vh", "span", "input", "placeholder", "type", "button"]
 });
 const _b$2 = _$declareBlock({
@@ -102,6 +103,7 @@ function useTypingModeEnabled() {
   });
   return getTypingModeEnabled;
 }
+const DEFAULT_ME = "anonim";
 function Body() {
   let window = useWindow();
   let [getTimer, setTimer] = useState(state.timer);
@@ -113,8 +115,9 @@ function Body() {
   let [getOnline, setOnline] = useState(state.online);
   let typingModeEnabled = useTypingModeEnabled();
   let userNameCookie = window.cookie("__acakata_user");
+  let [getShowOnboard, setShowOnboard] = useState(false);
   let getMe = useMemo(() => {
-    return userNameCookie() || "anonim";
+    return userNameCookie() || DEFAULT_ME;
   });
   const updateUserName = name => {
     window.setCookie("__acakata_user", name);
@@ -137,6 +140,7 @@ function Body() {
         clientFnId: _c$3
       });
     }
+    if (getMe() === DEFAULT_ME) setShowOnboard(true);
   });
   window.clientExec({
     clientFnId: _c$4
@@ -185,7 +189,17 @@ function Body() {
       setText("");
     }
   };
-  return _$createBlock(_b$1, [() => getQuestion()?.randomAnswer, () => " ", () => getQuestion()?.question, () => TIMER_LIMIT - getTimer(), () => getOnline().length, () => (getLeaderboard() || []).sort((a, b) => b.score - a.score).map(leaderboard => {
+  return _$createBlock(_b$1, [() => getShowOnboard() ? _$createComponent(Onboarding, {
+    get userName() {
+      return getMe();
+    },
+    get updateUserName() {
+      return updateUserName;
+    },
+    get setShowOnboard() {
+      return setShowOnboard;
+    }
+  }) : null, () => getQuestion()?.randomAnswer, () => " ", () => getQuestion()?.question, () => TIMER_LIMIT - getTimer(), () => getOnline().length, () => (getLeaderboard() || []).sort((a, b) => b.score - a.score).map(leaderboard => {
     const isOnline = getOnline().includes(leaderboard.player);
     const isMe = getMe() === leaderboard.player;
     return _$createBlock(_b$2, [() => leaderboard.player, () => leaderboard.score, () => isOnline ? _$createBlock(_b$3, null, null, null) : null], null, [{

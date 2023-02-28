@@ -36,9 +36,9 @@ const _c$7 = _$declareClientFunction({
   body: "{\n  if (e.key === \"Enter\") {\n    this.serverFunctions[0](e.target.value);\n    this.serverFunctions[1]();\n    e.target.value = \"\";\n  }\n}"
 });
 const _b$1 = _$declareBlock({
-  templateBuffer: "AB1BAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MACAAAM8IT6AAAEgQQIAgHJlbGF0aXZlIGJnLXdoaXRlIHB4LTYgcHQtMTAgcGItOCBzaGFkb3cteGwgcmluZy0xIHJpbmctZ3JheS05MDAvNSBzbTpteC1hdXRvIG1heC13LXNjcmVlbi1sZyBzbTpyb3VuZGVkLWxnIHNtOnB4LTEwIHctZnVsbCBmbGV4AwAEbWFpbgQFBgAAQQIAMGRpdmlkZS15IGRpdmlkZS1ncmF5LTMwMC81MCBmbGV4IGZsZXgtY29sIHctZnVsbADBAgAvZmxleCBmbGV4LXJvdyBqdXN0aWZ5LWJldHdlZW4gcGItNiBpdGVtcy1jZW50ZXIAwQIAEnRleHQtMnhsIGZvbnQtYm9sZACAAAxBY2FrYXRhIOKGkiCAAAM8IT6AAAEgBwIAGnRleHQtYmFzZSBmb250LW5vcm1hbCBtbC0xAIAAASABAgAWdGV4dC0yeGwgZm9udC1ib2xkIHAtMgCAAAEgwQIATmZsZXggZmxleC1yb3cgYmctbmV1dHJhbC01MCBvdmVyZmxvdy15LWhpZGRlbiBoLTIwIGl0ZW1zLWNlbnRlciBzcGFjZS14LTIgcHgtNAMAC2xlYWRlcmJvYXJkBAAAwQCAAAM8IT4AAAcgb25saW5lAAABIIAAASCBAgBvc3BhY2UteS0yIHB5LTggdGV4dC1iYXNlIGxlYWRpbmctNyB0ZXh0LWdyYXktNjAwIGZsZXggZmxleC1jb2wganVzdGlmeS1zdGFydCBpdGVtcy1zdGFydCBvdmVyZmxvdy15LWF1dG8gZmxleC0xAwAIbWVzc2FnZXMAgAABIEECADBwdC04IHRleHQtYmFzZSBsZWFkaW5nLTcgZmxleCBmbGV4LXJvdyBzcGFjZS14LTQDAAdhY3Rpb25zBAAAgQIAL2ZsZXgganVzdGlmeS1jZW50ZXIgaXRlbXMtY2VudGVyIGN1cnNvci1wb2ludGVyAIAAASCICQAHTWVzc2FnZQoABHRleHQCADRib3JkZXIgcm91bmRlZC1sZyBib3JkZXItbmV1dHJhbC03NSBweC00IHB5LTIgdy1mdWxsAIAAASBLAgA5cC00IGJnLXdoaXRlIGZvbnQtc2VtaWJvbGQgaG92ZXI6YmctbmV1dHJhbC01MCByb3VuZGVkLWxnAAAABFNlbmQ=",
-  elScriptBuffer: "GQH/AgACAQECAQMBBAEFAgYCBwIIAgUCCgIEAgwBDQEOAg0CEAIRAhIBEwIUAhUCFgIXCf8ABQcFBwn/C/8ODw3/Ef8U/wYCDRMUFhg=",
-  tokens: ["div", "class", "id", "style", "height", "100vh", "span", "input", "placeholder", "type", "button"]
+  templateBuffer: "ACBBAgBMcmVsYXRpdmUgZmxleCBtaW4taC1zY3JlZW4gZmxleC1jb2wganVzdGlmeS1zdGFydCBvdmVyZmxvdy1oaWRkZW4gYmctZ3JheS01MACAAAM8IT6AAAEgQQIAgHJlbGF0aXZlIGJnLXdoaXRlIHB4LTYgcHQtMTAgcGItOCBzaGFkb3cteGwgcmluZy0xIHJpbmctZ3JheS05MDAvNSBzbTpteC1hdXRvIG1heC13LXNjcmVlbi1sZyBzbTpyb3VuZGVkLWxnIHNtOnB4LTEwIHctZnVsbCBmbGV4AwAEbWFpbgQFBgAAQQIAMGRpdmlkZS15IGRpdmlkZS1ncmF5LTMwMC81MCBmbGV4IGZsZXgtY29sIHctZnVsbADBAgAvZmxleCBmbGV4LXJvdyBqdXN0aWZ5LWJldHdlZW4gcGItNiBpdGVtcy1jZW50ZXIAwQIAEnRleHQtMnhsIGZvbnQtYm9sZADHAEgJABpodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZwUAAjI0CgAJMCAwIDI0IDI0CwACMjQADA0ADGN1cnJlbnRDb2xvcg4A800xMSAxOGgydi0yaC0ydjJ6bTEtMTZDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgMThjLTQuNDEgMC04LTMuNTktOC04czMuNTktOCA4LTggOCAzLjU5IDggOC0zLjU5IDgtOCA4em0wLTE0Yy0yLjIxIDAtNCAxLjc5LTQgNGgyYzAtMS4xLjktMiAyLTJzMiAuOSAyIDJjMCAyLTMgMS43NS0zIDVoMmMwLTIuMjUgMy0yLjUgMy01IDAtMi4yMS0xLjc5LTQtNC00egCAAA0gQWNha2F0YSDihpIggAADPCE+gAABIA8CABp0ZXh0LWJhc2UgZm9udC1ub3JtYWwgbWwtMQCAAAEgAQIAHnRleHQtMnhsIGZvbnQtYm9sZCBwLTEgdy04IGgtOACAAAEgwQIATmZsZXggZmxleC1yb3cgYmctbmV1dHJhbC01MCBvdmVyZmxvdy15LWhpZGRlbiBoLTIwIGl0ZW1zLWNlbnRlciBzcGFjZS14LTIgcHgtNAMAC2xlYWRlcmJvYXJkBAAAwQCAAAM8IT4AAAcgb25saW5lAAABIIAAASCBAgBvc3BhY2UteS0yIHB5LTggdGV4dC1iYXNlIGxlYWRpbmctNyB0ZXh0LWdyYXktNjAwIGZsZXggZmxleC1jb2wganVzdGlmeS1zdGFydCBpdGVtcy1zdGFydCBvdmVyZmxvdy15LWF1dG8gZmxleC0xAwAIbWVzc2FnZXMAgAABIEECADBwdC04IHRleHQtYmFzZSBsZWFkaW5nLTcgZmxleCBmbGV4LXJvdyBzcGFjZS14LTQDAAdhY3Rpb25zBAAAgQIAL2ZsZXgganVzdGlmeS1jZW50ZXIgaXRlbXMtY2VudGVyIGN1cnNvci1wb2ludGVyAIAAASCQEQAHTWVzc2FnZRIABHRleHQCADRib3JkZXIgcm91bmRlZC1sZyBib3JkZXItbmV1dHJhbC03NSBweC00IHB5LTIgdy1mdWxsAIAAASBHAgA5cC00IGJnLXdoaXRlIGZvbnQtc2VtaWJvbGQgaG92ZXI6YmctbmV1dHJhbC01MCByb3VuZGVkLWxnAAAABFNlbmQ=",
+  elScriptBuffer: "GgH/AgACAQECAQMBBAEFAgYCBwIIAgkCBQILAgQCDQEOAQ8CDgIRAhICEwEUAhUCFgIXAhgJ/wAFCAUICv8M/w8QDv8S/xX/BwIGDhQVFxk=",
+  tokens: ["div", "class", "id", "style", "height", "100vh", "button", "svg", "xmlns", "viewBox", "width", "path", "fill", "d", "span", "input", "placeholder", "type"]
 });
 const _b$2 = _$declareBlock({
   templateBuffer: "AAVBAIEAgAABIIECABJmb250LXNlbWlib2xkIG1sLTEAAAABIA==",
@@ -223,25 +223,29 @@ function Body() {
       elRef.setAttribute("value", getMe())
     }
   }])], [{
-    targetId: 3,
+    targetId: 1,
+    type: 1,
+    fn: () => setShowOnboard(true)
+  }, {
+    targetId: 4,
     type: 1,
     fn: () => setEditMe(true)
   }, {
-    targetId: 4,
+    targetId: 5,
     type: 3,
     fn: {
       clientFnId: _c$6,
       serverBindFns: [setText]
     }
   }, {
-    targetId: 4,
+    targetId: 5,
     type: 6,
     fn: {
       clientFnId: _c$7,
       serverBindFns: [setText, onClick]
     }
   }, {
-    targetId: 5,
+    targetId: 6,
     type: 1,
     fn: onClick
   }], [{
@@ -250,17 +254,17 @@ function Body() {
       elRef.setStyleProperty("padding-top", typingModeEnabled() ? "450px" : "24px")
     }
   }, {
-    targetId: 1,
+    targetId: 2,
     effectFn(elRef) {
       elRef.setStyleProperty("display", typingModeEnabled() ? "none" : "inherit")
     }
   }, {
-    targetId: 2,
+    targetId: 3,
     effectFn(elRef) {
       elRef.setStyleProperty("padding-bottom", typingModeEnabled() ? "0" : "80px")
     }
   }, {
-    targetId: 4,
+    targetId: 5,
     effectFn(elRef) {
       elRef.setAttribute("value", getText())
     }

@@ -21,7 +21,7 @@ const _c$3 = _$declareClientFunction({
 });
 const _c$4 = _$declareClientFunction({
   argNames: [],
-  body: "{\n  setTimeout(() => {\n    const messages = document.getElementById(\"messages\");\n    messages.scrollTop = messages.scrollHeight;\n  }, 200);\n}"
+  body: "{\n  loadScript(\"\");\n  let script = document.createElement(\"script\");\n  script.setAttribute(\"data-website-id\", \"3d721788-abb6-44b1-ac87-bae3004ecf01\");\n  script.src = \"https://analytics.umami.is/script.js\";\n  document.head.appendChild(script);\n  setTimeout(() => {\n    const messages = document.getElementById(\"messages\");\n    messages.scrollTop = messages.scrollHeight;\n  }, 200);\n}"
 });
 const _c$5 = _$declareClientFunction({
   argNames: ["e"],

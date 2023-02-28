@@ -127,6 +127,15 @@ function Body() {
 
   window.clientExec(
     $c(() => {
+      loadScript("");
+      let script = document.createElement("script");
+      script.setAttribute(
+        "data-website-id",
+        "3d721788-abb6-44b1-ac87-bae3004ecf01"
+      );
+      script.src = "https://analytics.umami.is/script.js";
+      document.head.appendChild(script);
+
       setTimeout(() => {
         const messages = document.getElementById("messages");
         messages.scrollTop = messages.scrollHeight;
@@ -330,12 +339,6 @@ function Body() {
 function Head() {
   return (
     <>
-      <script
-        async
-        defer
-        src="https://analytics.umami.is/script.js"
-        data-website-id="3d721788-abb6-44b1-ac87-bae3004ecf01"
-      ></script>
       <style>{tailwindCssText}</style>
     </>
   );

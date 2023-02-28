@@ -10,6 +10,11 @@ Messages are stored in server memory and synced with client with [Valtio](https:
 
 Copy your `<supabase_url>` & `<supabase_key>` from [Supabase](https://app.supabase.com)
 
+Create new table `leaderboard` in Supabase, add fields:
+
+- `player` (text) as primary key
+- `score` (int8)
+
 ```
 npm run watch
 npm run style

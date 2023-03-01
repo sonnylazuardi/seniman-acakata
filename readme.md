@@ -25,6 +25,8 @@ SUPABASE_URL=<supabase_url> SUPABASE_KEY=<supabase_key> npm start
 
 The easiest way to deploy is using [Fly](https://fly.dev/)
 
+Add Supabase url and key as flyctl secrets
+
 ```
 flyctl deploy
 ```
